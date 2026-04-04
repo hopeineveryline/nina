@@ -25,7 +25,7 @@ pub async fn run(ctx: &AppContext, args: RunArgs) -> Result<()> {
     };
     let command = current_dir_command(&nix_cmd)?;
     let on = None;
-    run_attached_machine_command(ctx, &on, "running flake app", &command, "run", false).await
+    run_attached_machine_command(ctx, &on, "waking up the flake app", &command, "run", false).await
 }
 
 fn looks_like_url(target: &str) -> bool {

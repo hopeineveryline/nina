@@ -24,7 +24,7 @@ pub async fn run(ctx: &AppContext, args: DevelopArgs) -> Result<()> {
         return run_machine_command(
             ctx,
             &args.on,
-            "running a command in the dev shell",
+            "running something in the dev shell",
             &command,
             "develop",
             false,
@@ -51,7 +51,7 @@ pub async fn run(ctx: &AppContext, args: DevelopArgs) -> Result<()> {
     run_attached_machine_command(
         ctx,
         &args.on,
-        "entering dev shell",
+        "slipping into the dev shell",
         &command,
         "develop",
         false,

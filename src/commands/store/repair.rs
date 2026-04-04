@@ -17,7 +17,7 @@ pub async fn run(ctx: &AppContext, args: RepairArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "repairing store paths",
+        "fixing the store",
         "nix store repair --all",
         "store-repair",
         false,

@@ -18,7 +18,7 @@ pub async fn run(ctx: &AppContext, args: WhyArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "checking why this package is installed",
+        "tracing why this package snuck in",
         &command,
         "pkg-why",
         false,

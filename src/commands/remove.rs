@@ -59,7 +59,7 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
             if let Err(err) = run_machine_command(
                 ctx,
                 &args.on,
-                "applying after removal",
+                "patching it in",
                 &cmd,
                 "remove",
                 true,
@@ -67,7 +67,7 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
             .await
             {
                 ctx.output
-                    .error("the build failed after editing configuration.nix");
+                    .error("the rebuild stumbled — i can restore from backup if you like");
                 if confirm_action(ctx.config.confirm, "restore from backup?")? {
                     crate::editor::restore(path, &backup)?;
                     ctx.output
@@ -128,7 +128,7 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
         if let Err(err) = run_machine_command(
             ctx,
             &args.on,
-            "applying after removal",
+            "patching it in",
             &cmd,
             "remove",
             true,
@@ -136,7 +136,7 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
         .await
         {
             ctx.output
-                .error("the build failed after editing the remote configuration");
+                .error("the rebuild stumbled on the remote machine — i can restore from backup if you like");
             if confirm_action(ctx.config.confirm, "restore from remote backup?")? {
                 crate::exec::run(
                     &machine,

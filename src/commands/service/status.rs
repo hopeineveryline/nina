@@ -18,7 +18,7 @@ pub async fn run(ctx: &AppContext, args: StatusArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "checking service status",
+        "peeking at the service",
         &command,
         "service-status",
         false,

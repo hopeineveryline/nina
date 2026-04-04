@@ -12,7 +12,7 @@ pub async fn run(ctx: &AppContext, _args: CheckArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &on,
-        "checking flake outputs",
+        "taking a look at your flake",
         &command,
         "flake-check",
         false,

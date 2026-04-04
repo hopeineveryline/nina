@@ -13,7 +13,7 @@ pub async fn run(ctx: &AppContext, args: BootArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "checking boot entries",
+        "peeking at your boot menu",
         "bootctl list",
         "boot",
         false,

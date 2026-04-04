@@ -21,5 +21,5 @@ pub async fn run(ctx: &AppContext, args: DiffArgs) -> Result<()> {
             .to_string()
     };
 
-    run_machine_command(ctx, &args.on, "checking what changed", &cmd, "diff", false).await
+    run_machine_command(ctx, &args.on, "spotting the differences", &cmd, "diff", false).await
 }

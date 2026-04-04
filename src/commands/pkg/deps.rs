@@ -18,7 +18,7 @@ pub async fn run(ctx: &AppContext, args: DepsArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "listing package dependencies",
+        "peeking at what this package needs",
         &command,
         "pkg-deps",
         false,

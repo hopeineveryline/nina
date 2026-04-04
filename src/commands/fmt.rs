@@ -43,7 +43,7 @@ pub async fn run(ctx: &AppContext, args: FmtArgs) -> Result<()> {
         for (path, _, _) in &changes {
             ctx.output.print(&format!("  - {}", path));
         }
-        anyhow::bail!("format check failed");
+        anyhow::bail!("the formatting needs a little help — run nina fmt to fix it");
     }
 
     if changes.is_empty() {

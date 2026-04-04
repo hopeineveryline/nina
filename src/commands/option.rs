@@ -91,7 +91,7 @@ async fn apply_option(
             if let Err(err) = run_machine_command(
                 ctx,
                 &on,
-                "applying after adding option",
+                "patching it in",
                 &cmd,
                 "option",
                 true,
@@ -99,7 +99,7 @@ async fn apply_option(
             .await
             {
                 ctx.output
-                    .error("the build failed after editing configuration.nix");
+                    .error("the rebuild stumbled — i can restore from backup if you like");
                 if confirm_action(ctx.config.confirm, "restore from backup?")? {
                     crate::editor::restore(path, &backup)?;
                     ctx.output
@@ -156,7 +156,7 @@ async fn apply_option(
     if let Err(err) = run_machine_command(
         ctx,
         &on,
-        "applying after adding option",
+        "patching it in",
         &cmd,
         "option",
         true,

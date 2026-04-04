@@ -18,7 +18,7 @@ pub async fn run(ctx: &AppContext, args: PathArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "resolving store path",
+        "finding the store path",
         &command,
         "store-path",
         false,

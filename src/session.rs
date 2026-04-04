@@ -331,7 +331,7 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             headline: "warming the rails before a full system move.",
             pulse: "checking the shape of your nix world first.",
             followup: "i'll narrate the big steps instead of dumping a silent wall.",
-            outro: "the rebuild arc is settled.",
+            outro: "the rebuild is all settled in ♡",
             accent: RgbColor::MINT,
             animation: DangoAnimation::Dance,
             pulse_ms: 420,
@@ -403,9 +403,9 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
         "service" => SessionDescriptor {
             tag: "daemon",
             headline: "walking over to systemd with a little extra bedside manner.",
-            pulse: "checking the service pulse before touching it.",
+            pulse: "checking on the service before giving it a nudge.",
             followup: "you'll see the service story as it changes.",
-            outro: "the service step is wrapped.",
+            outro: "the service bit is all wrapped up ♡",
             accent: RgbColor::LAVENDER,
             animation: DangoAnimation::Wave,
             pulse_ms: 300,
@@ -413,9 +413,9 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
         "hello" => SessionDescriptor {
             tag: "hi",
             headline: "leaning in with a proper introduction instead of a dead splash line.",
-            pulse: "gathering the machine list and a little stage lighting.",
+            pulse: "finding your machines and giving the stage a little light.",
             followup: "this one is meant to feel playful.",
-            outro: "the hello landed.",
+            outro: "the hello landed sweet ♡",
             accent: RgbColor::PINK,
             animation: DangoAnimation::Dance,
             pulse_ms: 320,
@@ -425,7 +425,7 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             headline: "waking up the prompt so it feels less like a cold subprocess.",
             pulse: "keeping you posted while the command takes shape.",
             followup: "i'll stay visible for a beat before i leave.",
-            outro: "the pass is complete.",
+            outro: "all done, i'll leave the trail here ♡",
             accent: RgbColor::PINK,
             animation: DangoAnimation::Idle,
             pulse_ms: 250,
@@ -443,8 +443,8 @@ mod tests {
             "descriptor copy should not contain doubled spaces: {line}"
         );
         assert!(
-            line.ends_with('.'),
-            "descriptor copy should end with a period: {line}"
+            line.ends_with('.') || line.ends_with('♡'),
+            "descriptor copy should end with a period or heart: {line}"
         );
         assert!(
             line.split_whitespace().count() >= 3,
@@ -685,7 +685,7 @@ mod tests {
             headline: "warming the rails before a full system move.",
             pulse: "checking the shape of your nix world first.",
             followup: "i'll narrate the big steps instead of dumping a silent wall.",
-            outro: "the rebuild arc is settled.",
+            outro: "the rebuild is all settled in ♡",
             pulse_ms: 420,
         },
         back: "back" => {
@@ -832,7 +832,7 @@ mod tests {
             headline: "waking up the prompt so it feels less like a cold subprocess.",
             pulse: "keeping you posted while the command takes shape.",
             followup: "i'll stay visible for a beat before i leave.",
-            outro: "the pass is complete.",
+            outro: "all done, i'll leave the trail here ♡",
             pulse_ms: 250,
         },
         info: "info" => {
@@ -893,9 +893,9 @@ mod tests {
         },
         service: "service" => {
             headline: "walking over to systemd with a little extra bedside manner.",
-            pulse: "checking the service pulse before touching it.",
+            pulse: "checking on the service before giving it a nudge.",
             followup: "you'll see the service story as it changes.",
-            outro: "the service step is wrapped.",
+            outro: "the service bit is all wrapped up ♡",
             pulse_ms: 300,
         },
         status: "status" => {
@@ -923,7 +923,7 @@ mod tests {
             headline: "warming the rails before a full system move.",
             pulse: "checking the shape of your nix world first.",
             followup: "i'll narrate the big steps instead of dumping a silent wall.",
-            outro: "the rebuild arc is settled.",
+            outro: "the rebuild is all settled in ♡",
             pulse_ms: 420,
         },
         log: "log" => {
@@ -949,9 +949,9 @@ mod tests {
         },
         hello: "hello" => {
             headline: "leaning in with a proper introduction instead of a dead splash line.",
-            pulse: "gathering the machine list and a little stage lighting.",
+            pulse: "finding your machines and giving the stage a little light.",
             followup: "this one is meant to feel playful.",
-            outro: "the hello landed.",
+            outro: "the hello landed sweet ♡",
             pulse_ms: 320,
         },
         mood: "mood" => {

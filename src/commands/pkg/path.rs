@@ -18,7 +18,7 @@ pub async fn run(ctx: &AppContext, args: PathArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "resolving package store path",
+        "finding the package's home",
         &command,
         "pkg-path",
         false,

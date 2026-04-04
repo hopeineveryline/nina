@@ -13,7 +13,7 @@ pub async fn run(ctx: &AppContext, args: UpdateArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "updating channels",
+        "freshening channels",
         "sudo nix-channel --update",
         "channel-update",
         true,

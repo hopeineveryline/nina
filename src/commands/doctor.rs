@@ -203,7 +203,7 @@ async fn generation_count_check(machine: &Machine, keep_generations: u32) -> Dia
 
 fn render_report(ctx: &AppContext, report: &DoctorReport) {
     ctx.output
-        .info(&format!("running diagnostics on {}...", report.machine));
+        .info(&format!("giving {} a little look-over...", report.machine));
     let mut warnings = 0;
 
     for row in &report.rows {

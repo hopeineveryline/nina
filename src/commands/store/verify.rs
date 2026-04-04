@@ -13,7 +13,7 @@ pub async fn run(ctx: &AppContext, args: VerifyArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "verifying store integrity",
+        "checking the store over",
         "nix store verify --all",
         "store-verify",
         false,

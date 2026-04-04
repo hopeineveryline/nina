@@ -30,7 +30,7 @@ pub async fn run(ctx: &AppContext, args: ApplyArgs) -> Result<()> {
     run_machine_command(
         ctx,
         &args.on,
-        "applying your config",
+        "putting your config live",
         &cmd,
         "apply",
         needs_confirmation,

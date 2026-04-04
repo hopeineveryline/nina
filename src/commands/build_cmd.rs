@@ -22,7 +22,7 @@ pub async fn run(ctx: &AppContext, args: BuildArgs) -> Result<()> {
     };
     let command = current_dir_command(&nix_cmd)?;
     let on = None;
-    run_machine_command(ctx, &on, "building flake output", &command, "build", false).await
+    run_machine_command(ctx, &on, "building your flake", &command, "build", false).await
 }
 
 fn looks_like_url(target: &str) -> bool {
