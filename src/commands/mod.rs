@@ -88,30 +88,23 @@ pub async fn run_machine_command(
         return Ok(());
     }
 
-    // Spawn the animation on a dedicated thread so it completes before any
-    // post-command output starts — prevents frames from interleaving with stdout.
-    let animation_handle = if ctx.config.animate && io::stdout().is_terminal() {
-        terminal::size()
-            .ok()
-            .map(|(width, height)| {
+    // Spawn the animation so it runs concurrently with the command.
+    // We await the animation handle AFTER the command finishes, ensuring the
+    // animation clears its frames before any post-command output appears.
+    let animation_handle: Option<tokio::task::JoinHandle<()>> =
+        if ctx.config.animate && io::stdout().is_terminal() {
+            terminal::size().ok().map(|(width, height)| {
                 let pos = crate::dango::position_from_pref(&ctx.config.dango_pos, width, height);
                 let anim = animation_for(command_name);
-                std::thread::spawn(move || {
-                    let rt = tokio::runtime::Builder::new_current_thread()
-                        .enable_time()
-                        .build()
-                        .expect("tokio runtime for command animation");
-                    rt.block_on(async {
-                        let player =
-                            crate::dango::DangoPlayer::start(anim, pos);
-                        tokio::time::sleep(std::time::Duration::from_millis(200)).await;
-                        player.stop().await;
-                    });
+                tokio::spawn(async move {
+                    let player = crate::dango::DangoPlayer::start(anim, pos);
+                    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                    player.stop().await;
                 })
             })
-    } else {
-        None
-    };
+        } else {
+            None
+        };
 
     let gen_before = current_generation(&machine).await.ok().flatten();
     let started = Instant::now();
@@ -126,9 +119,9 @@ pub async fn run_machine_command(
     let elapsed = started.elapsed().as_millis() as u64;
     let gen_after = current_generation(&machine).await.ok().flatten();
 
-    // Block until the animation thread finishes so no frames intermix with post-command output.
+    // Block until the animation finishes so no frames intermix with post-command output.
     if let Some(handle) = animation_handle {
-        let _ = handle.join();
+        let _ = handle.await;
     }
 
     match result {

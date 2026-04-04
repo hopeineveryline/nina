@@ -44,7 +44,7 @@ async fn run_prompt(ctx: &AppContext) -> Result<()> {
     }
     ctx.output.tip("type 'quit' when you want the room back.");
     ctx.output.blank();
-    pulse(ctx, DangoAnimation::Dance, 700);
+    pulse(ctx, DangoAnimation::Dance, 700).await;
 
     loop {
         print!("{}", ctx.output.prompt("nina"));
@@ -103,7 +103,7 @@ async fn run_prompt(ctx: &AppContext) -> Result<()> {
     }
 
     ctx.output.cozy("okay, i'll drift off now ♡");
-    pulse(ctx, DangoAnimation::Wave, 500);
+    pulse(ctx, DangoAnimation::Wave, 500).await;
     Ok(())
 }
 
@@ -121,7 +121,7 @@ async fn run_one_shot(ctx: &AppContext, command: Command, entered: Option<&str>)
     ctx.output
         .status_line(descriptor.tag, descriptor.pulse, descriptor.accent);
     ctx.output.tip(descriptor.followup);
-    pulse(ctx, descriptor.animation, descriptor.pulse_ms);
+    pulse(ctx, descriptor.animation, descriptor.pulse_ms).await;
 
     let started = std::time::Instant::now();
     let result = dispatch_command(ctx, command).await;
@@ -195,7 +195,7 @@ async fn dispatch_command(ctx: &AppContext, command: Command) -> Result<()> {
     }
 }
 
-fn pulse(ctx: &AppContext, animation: DangoAnimation, millis: u64) {
+async fn pulse(ctx: &AppContext, animation: DangoAnimation, millis: u64) {
     if !ctx.config.animate || !io::stdout().is_terminal() {
         return;
     }
@@ -205,19 +205,8 @@ fn pulse(ctx: &AppContext, animation: DangoAnimation, millis: u64) {
     };
 
     let player = DangoPlayer::start(animation, pos);
-    // Run the animation on a dedicated thread so it completes fully before
-    // dispatch_command starts — prevents animation frames from interleaving with command output.
-    let handle = std::thread::spawn(move || {
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_time()
-            .build()
-            .expect("tokio runtime for animation");
-        rt.block_on(async {
-            sleep(Duration::from_millis(millis)).await;
-            player.stop().await;
-        });
-    });
-    let _ = handle.join();
+    sleep(Duration::from_millis(millis)).await;
+    player.stop().await;
 }
 
 async fn linger(ctx: &AppContext, animation: DangoAnimation) {
