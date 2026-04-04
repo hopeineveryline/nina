@@ -61,9 +61,6 @@ she walks, sweeps, waves, dances, and cheers. Nina also does little occasional k
 **💬 living prompt + command runway**
 run plain `nina` and you get a tiny interactive prompt instead of a dead one-liner. run `nina <command>` and she now pauses just long enough to frame the action, animate the dango, keep you posted with grouped colorful status lines, and then bow out.
 
-**🧪 guest-backed regression runs**
-the repo now carries a Kiln VM regression script that refuses to run unless Nina exposes at least `500` Rust tests, runs local build/test checks first, and then boots a real NixOS guest under QEMU to execute the suite there.
-
 ---
 
 ## commands
@@ -152,32 +149,6 @@ for source installs:
 nix installs get completions automatically via `nina.nix`.
 
 ---
-
-## kiln + nix testing
-
-this repo now ships a local kiln harness aimed at the sibling checkout in `../kiln`.
-
-```bash
-./scripts/kiln-fire.sh
-```
-
-if nix is available, the script enters `nix develop .#kiln` first so kiln sees nina inside a real nix shell before it runs `kiln fire .`.
-
-for the full guest-backed regression path from macOS into a nixos qemu vm:
-
-```bash
-./scripts/kiln-vm-regression.sh
-```
-
-set `KILN_KEEP_ON_FAIL=1` if you want the guest to stay alive after a failing run so you can inspect it with Kiln's `vm drop` flow.
-
-for a nixos vm smoke pass:
-
-```bash
-./scripts/kiln-vm-smoke.sh
-```
-
-that target builds `.#checks.x86_64-linux.nixos-vm-smoke`, boots a nixos vm, runs `nina help`, `nina hello`, and verifies the repo still exposes the full regression surface from inside `nix develop`.
 
 ---
 
