@@ -88,11 +88,27 @@ pub async fn run_machine_command(
         return Ok(());
     }
 
-    let dango = if ctx.config.animate && io::stdout().is_terminal() {
-        terminal::size().ok().map(|(width, height)| {
-            let pos = crate::dango::position_from_pref(&ctx.config.dango_pos, width, height);
-            crate::dango::DangoPlayer::start(animation_for(command_name), pos)
-        })
+    // Spawn the animation on a dedicated thread so it completes before any
+    // post-command output starts — prevents frames from interleaving with stdout.
+    let animation_handle = if ctx.config.animate && io::stdout().is_terminal() {
+        terminal::size()
+            .ok()
+            .map(|(width, height)| {
+                let pos = crate::dango::position_from_pref(&ctx.config.dango_pos, width, height);
+                let anim = animation_for(command_name);
+                std::thread::spawn(move || {
+                    let rt = tokio::runtime::Builder::new_current_thread()
+                        .enable_time()
+                        .build()
+                        .expect("tokio runtime for command animation");
+                    rt.block_on(async {
+                        let player =
+                            crate::dango::DangoPlayer::start(anim, pos);
+                        tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                        player.stop().await;
+                    });
+                })
+            })
     } else {
         None
     };
@@ -110,8 +126,9 @@ pub async fn run_machine_command(
     let elapsed = started.elapsed().as_millis() as u64;
     let gen_after = current_generation(&machine).await.ok().flatten();
 
-    if let Some(player) = dango {
-        player.stop().await;
+    // Block until the animation thread finishes so no frames intermix with post-command output.
+    if let Some(handle) = animation_handle {
+        let _ = handle.join();
     }
 
     match result {
