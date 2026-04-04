@@ -1,0 +1,18 @@
+[runner]
+threads = 0
+retry_count = 2
+timeout_per_test_secs = 45
+max_loops = 1
+
+[vm]
+enabled = true
+backend = "auto"
+allow_network = false
+memory_mb = 8192
+cpus = 4
+keep_on_failure = true
+
+[report]
+write_markdown = true
+output_dir = "kiln/reports"
+open_on_complete = false

@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nina, friendly NixOS management</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #100d16;
+        --panel: #181320;
+        --panel-2: #21192b;
+        --line: #3a2f48;
+        --text: #f8efff;
+        --muted: #c9bad6;
+        --accent: #ff9ac7;
+        --accent-2: #bfa5ff;
+        --success: #9dffce;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-rounded, "SF Pro Rounded", "Inter", system-ui, sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(191, 165, 255, 0.18), transparent 28%),
+          radial-gradient(circle at 80% 20%, rgba(255, 154, 199, 0.22), transparent 22%),
+          var(--bg);
+        color: var(--text);
+      }
+
+      main {
+        width: min(1120px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 2rem 0 4rem;
+      }
+
+      .hero,
+      .bottom-cta {
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, rgba(33, 25, 43, 0.98), rgba(24, 19, 32, 0.96));
+        border-radius: 28px;
+        padding: 2rem;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+        gap: 2rem;
+        align-items: start;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(255, 154, 199, 0.12);
+        color: var(--accent);
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+      }
+
+      h1 {
+        font-size: clamp(3.2rem, 8vw, 6rem);
+        margin-top: 1rem;
+      }
+
+      h2 {
+        font-size: clamp(2.2rem, 6vw, 3.5rem);
+      }
+
+      p {
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+
+      .hero-copy p {
+        max-width: 60ch;
+      }
+
+      .command-card,
+      .install-footer {
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 1rem;
+      }
+
+      .command-stack {
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .command-block {
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 18px;
+        padding: 0.9rem;
+      }
+
+      .command-label {
+        display: block;
+        margin-bottom: 0.55rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .command-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      code {
+        display: block;
+        padding: 0.95rem 1rem;
+        border-radius: 14px;
+        background: #0e0b14;
+        color: var(--success);
+        font-size: 0.96rem;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .copy-button {
+        appearance: none;
+        border: 0;
+        border-radius: 14px;
+        padding: 0.85rem 1rem;
+        font: inherit;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #1a1022;
+        cursor: pointer;
+        min-width: 110px;
+      }
+
+      .copy-button[data-copied="true"] {
+        background: linear-gradient(135deg, #9dffce, #b2f3ff);
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+
+      .meta-card {
+        border: 1px solid var(--line);
+        background: rgba(24, 19, 32, 0.88);
+        border-radius: 20px;
+        padding: 1rem;
+      }
+
+      .bottom-cta {
+        margin-top: 2rem;
+        display: grid;
+        gap: 1.2rem;
+      }
+
+      .bottom-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      @media (max-width: 860px) {
+        .hero,
+        .bottom-grid,
+        .meta {
+          grid-template-columns: 1fr;
+        }
+
+        .command-row {
+          grid-template-columns: 1fr;
+        }
+
+        .copy-button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">(˶ᵔ ᵕ ᵔ˶) Nina is live on Nix</span>
+          <h1>Friendly NixOS management, instantly installable.</h1>
+          <p>
+            Nina gives NixOS users a warm, terminal-first CLI and TUI for rebuilds,
+            package search, generation history, diagnostics, and remote workflows.
+            If someone lands here and wants Nina, the install path should be one click away.
+          </p>
+        </div>
+
+        <div class="command-card">
+          <div class="command-stack">
+            <div class="command-block">
+              <span class="command-label">Run it right now</span>
+              <div class="command-row">
+                <code id="hero-run-command">nix run github:asha-software/nina</code>
+                <button class="copy-button" data-copy-target="hero-run-command">Copy</button>
+              </div>
+            </div>
+
+            <div class="command-block">
+              <span class="command-label">Install it into your profile</span>
+              <div class="command-row">
+                <code id="hero-install-command">nix profile install github:asha-software/nina</code>
+                <button class="copy-button" data-copy-target="hero-install-command">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="meta" aria-label="Nina feature summary">
+        <article class="meta-card">
+          <h2>Search</h2>
+          <p>Search nixpkgs in a TUI, inspect details, then install or try packages without leaving Nina.</p>
+        </article>
+        <article class="meta-card">
+          <h2>History</h2>
+          <p>Browse generations interactively, diff them, and jump between known-good states with calm guidance.</p>
+        </article>
+        <article class="meta-card">
+          <h2>Doctor</h2>
+          <p>Get machine summaries, diagnostics, and friendlier repair hints for the rough edges of NixOS life.</p>
+        </article>
+      </section>
+
+      <section class="bottom-cta">
+        <div>
+          <h2>Install Nina in one click.</h2>
+          <p>
+            The hero should make it easy to start, and the bottom of the page should do the same for people who scroll before deciding.
+          </p>
+        </div>
+
+        <div class="bottom-grid">
+          <div class="install-footer">
+            <span class="command-label">Try without installing</span>
+            <div class="command-row">
+              <code id="footer-run-command">nix run github:asha-software/nina</code>
+              <button class="copy-button" data-copy-target="footer-run-command">Copy</button>
+            </div>
+          </div>
+
+          <div class="install-footer">
+            <span class="command-label">Keep Nina in your profile</span>
+            <div class="command-row">
+              <code id="footer-install-command">nix profile install github:asha-software/nina</code>
+              <button class="copy-button" data-copy-target="footer-install-command">Copy</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const copyButtons = document.querySelectorAll('[data-copy-target]');
+
+      async function copyFromTarget(button) {
+        const targetId = button.getAttribute('data-copy-target');
+        const source = document.getElementById(targetId);
+        if (!source) return;
+
+        const text = source.textContent.trim();
+        try {
+          await navigator.clipboard.writeText(text);
+          const previous = button.textContent;
+          button.textContent = 'Copied';
+          button.dataset.copied = 'true';
+          window.setTimeout(() => {
+            button.textContent = previous;
+            button.dataset.copied = 'false';
+          }, 1600);
+        } catch {
+          button.textContent = 'Failed';
+          window.setTimeout(() => {
+            button.textContent = 'Copy';
+          }, 1600);
+        }
+      }
+
+      copyButtons.forEach((button) => {
+        button.addEventListener('click', () => copyFromTarget(button));
+      });
+    </script>
+  </body>
+</html>

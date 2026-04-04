@@ -1,0 +1,5 @@
+target/
+.sisyphus/
+.DS_Store
+.agent/
+CLAUDE.md

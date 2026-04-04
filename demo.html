@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 720px;
+  height: 460px;
+  background: #0d0e1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cascadia Code', 'Fira Code', 'SF Mono', 'Menlo', 'Monaco', monospace;
+}
+
+.window {
+  width: 700px;
+  border-radius: 11px;
+  overflow: hidden;
+  box-shadow: 0 22px 55px rgba(0,0,0,0.75);
+  border: 1px solid #1e1f30;
+}
+
+.titlebar {
+  background: #1c1d2e;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-bottom: 1px solid #252638;
+}
+
+.dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+.dot.r { background: #ff8fab; }
+.dot.y { background: #ffd6a5; }
+.dot.g { background: #b9fbc0; }
+
+.title-text {
+  flex: 1;
+  text-align: center;
+  color: #3a3b55;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+}
+
+.terminal {
+  background: #13141f;
+  padding: 16px 20px;
+  height: 420px;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.62;
+  color: #cdd6f4;
+  position: relative;
+  transition: opacity 0.22s ease;
+}
+
+.line { display: block; white-space: pre; }
+
+.dim    { color: #3d3f5a; }
+.lavend { color: #c8b6ff; }
+.peach  { color: #ffd6a5; }
+.mint   { color: #b9fbc0; }
+.pink   { color: #ffc8dd; }
+.blue   { color: #bde0fe; }
+.white  { color: #e2e8f0; }
+.gold   { color: #f9e2af; }
+.muted  { color: #6b6d8a; }
+
+.cursor {
+  display: inline-block;
+  width: 7px; height: 14px;
+  background: #c8b6ff;
+  vertical-align: -2px;
+  animation: blink 1.1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <div class="dot r"></div>
+    <div class="dot y"></div>
+    <div class="dot g"></div>
+    <div class="title-text">nina</div>
+  </div>
+  <div class="terminal" id="term"></div>
+</div>
+
+<script>
+const term = document.getElementById('term');
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function row(...parts) {
+  const d = el('div', 'line');
+  for (const p of parts) {
+    if (typeof p === 'string') d.appendChild(document.createTextNode(p));
+    else d.appendChild(p);
+  }
+  return d;
+}
+
+const blank = () => row('');
+
+async function typeInto(span, text, speed = 52) {
+  for (const ch of text) {
+    span.textContent += ch;
+    await sleep(speed + (Math.random() * 18 - 9));
+  }
+}
+
+function promptRow() {
+  const d = el('div', 'line');
+  d.appendChild(el('span', 'lavend', '~'));
+  d.appendChild(el('span', 'muted', '/'));
+  d.appendChild(document.createTextNode(' '));
+  d.appendChild(el('span', 'dim', '$'));
+  d.appendChild(document.createTextNode(' '));
+  return d;
+}
+
+function cur() {
+  const c = el('span', 'cursor');
+  return c;
+}
+
+// ─── Scene 1: nina search ─────────────────────────────────────────
+async function sceneSearch() {
+  term.innerHTML = '';
+
+  const prow = promptRow();
+  const cmd = el('span', 'peach', '');
+  const c = cur();
+  prow.appendChild(cmd);
+  prow.appendChild(c);
+  term.appendChild(prow);
+
+  await sleep(550);
+  await typeInto(cmd, 'nina search ripgrep');
+  await sleep(380);
+  c.remove();
+
+  term.appendChild(blank());
+  await sleep(140);
+
+  // top border + search bar
+  const W = 64;
+  const border = '─'.repeat(W - 2);
+
+  term.appendChild(row(el('span','dim',`┌─ search ${'─'.repeat(W-11)}┐`)));
+  await sleep(30);
+
+  const searchRow = el('div','line');
+  searchRow.appendChild(el('span','dim','│ '));
+  searchRow.appendChild(el('span','lavend','▶ '));
+  const searchInput = el('span','white','ripgrep');
+  searchRow.appendChild(searchInput);
+  const searchPad = el('span','dim',' '.repeat(W - 13) + '3 results │');
+  searchRow.appendChild(searchPad);
+  term.appendChild(searchRow);
+
+  term.appendChild(row(el('span','dim',`├${'─'.repeat(W)}┤`)));
+  await sleep(60);
+
+  const packages = [
+    { name: 'ripgrep',       ver: '14.1.0',  desc: 'fast regex search — combines speed of ag with usability of grep', sel: true },
+    { name: 'ripgrep-all',   ver: '0.10.0',  desc: 'ripgrep, extended to search PDFs, DOCX, sqlite & more',          sel: false },
+    { name: 'ripgrep-fixed', ver: '0.1.0',   desc: 'ripgrep with literal string search',                             sel: false },
+  ];
+
+  const pkgRows = [];
+  for (const p of packages) {
+    const d = el('div', 'line');
+    d.appendChild(el('span','dim','│ '));
+    if (p.sel) {
+      d.appendChild(el('span','lavend','▶ '));
+      d.appendChild(el('span','white', p.name.padEnd(16)));
+      d.appendChild(el('span','muted', p.ver.padEnd(9)));
+      d.appendChild(el('span','dim',   p.desc.substring(0, 32)));
+    } else {
+      d.appendChild(document.createTextNode('  '));
+      d.appendChild(el('span','muted', p.name.padEnd(16)));
+      d.appendChild(el('span','dim',   p.ver.padEnd(9)));
+      d.appendChild(el('span','dim',   p.desc.substring(0, 32)));
+    }
+    d.appendChild(el('span','dim',' '.repeat(2) + '│'));
+    term.appendChild(d);
+    pkgRows.push({ d, p });
+    await sleep(50);
+  }
+
+  term.appendChild(row(el('span','dim',`└${'─'.repeat(W)}┘`)));
+  await sleep(120);
+  term.appendChild(blank());
+
+  // detail panel
+  const sel = packages[0];
+  term.appendChild(row(el('span','dim',`┌─ details ${'─'.repeat(W-11)}┐`)));
+  term.appendChild(row(el('span','dim','│ '), el('span','white', 'ripgrep'), el('span','muted','  14.1.0'), el('span','dim',' '.repeat(W-16)+'│')));
+  term.appendChild(row(el('span','dim','│'+' '.repeat(W)+'│')));
+  term.appendChild(row(el('span','dim','│ '), el('span','dim','recursively searches the current directory for a regex   │')));
+  term.appendChild(row(el('span','dim','│ '), el('span','dim','pattern. combines the speed of ag with the usability of  │')));
+  term.appendChild(row(el('span','dim','│ '), el('span','dim','grep. respects .gitignore by default.                    │')));
+  term.appendChild(row(el('span','dim','│'+' '.repeat(W)+'│')));
+
+  const hintRow = el('div','line');
+  hintRow.appendChild(el('span','dim','│  '));
+  hintRow.appendChild(el('span','lavend','i'));
+  hintRow.appendChild(el('span','muted',' install   '));
+  hintRow.appendChild(el('span','lavend','t'));
+  hintRow.appendChild(el('span','muted',' try in shell   '));
+  hintRow.appendChild(el('span','lavend','y'));
+  hintRow.appendChild(el('span','muted',' copy name   '));
+  hintRow.appendChild(el('span','lavend','q'));
+  hintRow.appendChild(el('span','muted',' quit'));
+  hintRow.appendChild(el('span','dim','      │'));
+  term.appendChild(hintRow);
+  term.appendChild(row(el('span','dim',`└${'─'.repeat(W)}┘`)));
+
+  await sleep(2600);
+}
+
+// ─── Scene 2: nina apply ──────────────────────────────────────────
+async function sceneApply() {
+  term.innerHTML = '';
+
+  const prow = promptRow();
+  const cmd = el('span','peach','');
+  const c = cur();
+  prow.appendChild(cmd);
+  prow.appendChild(c);
+  term.appendChild(prow);
+
+  await sleep(500);
+  await typeInto(cmd, 'nina apply');
+  await sleep(360);
+  c.remove();
+
+  term.appendChild(blank());
+  await sleep(160);
+
+  // dango overlay
+  const dango = el('div');
+  dango.style.cssText = `
+    position:absolute; right:22px; top:56px;
+    color:#c8b6ff; line-height:1.4; font-size:13px;
+    white-space:pre; font-family:inherit;
+  `;
+  dango.textContent = '(●)\n(●)\n(●)\n | ';
+  term.appendChild(dango);
+
+  const dangoFrames = [
+    '(●)\n(●)\n(●)\n\\| ',
+    '(●)\n(●)\n(●)\n |/',
+    '(●)\n(●)\n(●)\n\\| ',
+    '(●)/\n(●)\n(●)\n | ',
+    '(●)\n(●)\n(●)\n |/',
+    '(●)\n(●)\n(●)\n\\| ',
+  ];
+  let fi = 0;
+  const dangoTick = setInterval(() => {
+    dango.textContent = dangoFrames[fi++ % dangoFrames.length];
+  }, 210);
+
+  const steps = [
+    [el('span','muted','  evaluating nix expressions...'), 330],
+    [el('span','muted','  building configuration...'),     380],
+    [el('span','muted','  copying paths to store...'),     350],
+    [el('span','muted','  activating new configuration...'), 400],
+  ];
+
+  for (const [s, delay] of steps) {
+    term.appendChild(row(s));
+    await sleep(delay);
+  }
+
+  clearInterval(dangoTick);
+
+  // dance
+  for (let i = 0; i < 4; i++) {
+    dango.textContent = i % 2 === 0
+      ? '\\(●)/\n (●)\n (●)\n /|\\'
+      : ' (●)\n (●)\n (●)\n  | ';
+    await sleep(160);
+  }
+  dango.textContent = '(●)/\n(●)\n(●)\n | ';
+
+  term.appendChild(blank());
+  const done = el('div','line');
+  done.appendChild(el('span','mint','  ✓ '));
+  done.appendChild(el('span','white','switched to generation 47  '));
+  done.appendChild(el('span','pink','♡'));
+  term.appendChild(done);
+
+  term.appendChild(blank());
+  term.appendChild(row(el('span','muted','  generation 47 is now active')));
+
+  await sleep(2200);
+  dango.remove();
+}
+
+// ─── Scene 3: nina history ─────────────────────────────────────────
+async function sceneHistory() {
+  term.innerHTML = '';
+
+  const prow = promptRow();
+  const cmd = el('span','peach','');
+  const c = cur();
+  prow.appendChild(cmd);
+  prow.appendChild(c);
+  term.appendChild(prow);
+
+  await sleep(500);
+  await typeInto(cmd, 'nina history');
+  await sleep(360);
+  c.remove();
+
+  term.appendChild(blank());
+  await sleep(160);
+
+  const W = 64;
+  term.appendChild(row(el('span','dim',`┌─ history ${'─'.repeat(W-11)}┐`)));
+
+  const colHdr = el('div','line');
+  colHdr.appendChild(el('span','dim','│  '));
+  colHdr.appendChild(el('span','muted','gen   date                  packages   kernel             '));
+  colHdr.appendChild(el('span','dim','│'));
+  term.appendChild(colHdr);
+
+  term.appendChild(row(el('span','dim','│ '+'─'.repeat(W-2)+' │')));
+  await sleep(100);
+
+  const gens = [
+    { n: '47', date: '2026-03-28  09:14', pkgs: '312', kernel: '6.6.74' },
+    { n: '46', date: '2026-03-27  15:23', pkgs: '311', kernel: '6.6.74' },
+    { n: '45', date: '2026-03-25  11:08', pkgs: '311', kernel: '6.6.72' },
+    { n: '44', date: '2026-03-20  08:42', pkgs: '309', kernel: '6.6.72' },
+    { n: '43', date: '2026-03-15  14:17', pkgs: '308', kernel: '6.6.70' },
+  ];
+
+  function makeGenRow(g, sel) {
+    const d = el('div','line');
+    d.appendChild(el('span','dim','│  '));
+    if (sel) {
+      d.appendChild(el('span','lavend','▶  '));
+      d.appendChild(el('span','white',  g.n.padEnd(6)));
+      d.appendChild(el('span','white',  g.date.padEnd(21)));
+      d.appendChild(el('span','mint',   g.pkgs.padEnd(11)));
+      d.appendChild(el('span','white',  g.kernel.padEnd(18)));
+    } else {
+      d.appendChild(el('span','dim','   '));
+      d.appendChild(el('span','muted', g.n.padEnd(6)));
+      d.appendChild(el('span','muted', g.date.padEnd(21)));
+      d.appendChild(el('span','dim',   g.pkgs.padEnd(11)));
+      d.appendChild(el('span','dim',   g.kernel.padEnd(18)));
+    }
+    d.appendChild(el('span','dim','│'));
+    return d;
+  }
+
+  const genEls = [];
+  for (let i = 0; i < gens.length; i++) {
+    const d = makeGenRow(gens[i], i === 0);
+    term.appendChild(d);
+    genEls.push(d);
+    await sleep(60);
+  }
+
+  term.appendChild(row(el('span','dim',`└${'─'.repeat(W)}┘`)));
+  term.appendChild(blank());
+
+  const hints = el('div','line');
+  hints.appendChild(el('span','dim','  '));
+  hints.appendChild(el('span','lavend','enter'));
+  hints.appendChild(el('span','muted',' switch   '));
+  hints.appendChild(el('span','lavend','d'));
+  hints.appendChild(el('span','muted',' diff   '));
+  hints.appendChild(el('span','lavend','⌫'));
+  hints.appendChild(el('span','muted',' delete   '));
+  hints.appendChild(el('span','lavend','q'));
+  hints.appendChild(el('span','muted',' quit'));
+  term.appendChild(hints);
+
+  await sleep(1400);
+
+  // animate cursor down through generations
+  for (let i = 0; i < gens.length; i++) {
+    for (let j = 0; j < gens.length; j++) {
+      const newRow = makeGenRow(gens[j], j === i);
+      genEls[j].replaceWith(newRow);
+      genEls[j] = newRow;
+    }
+    await sleep(340);
+  }
+
+  await sleep(1600);
+}
+
+// ─── main loop ─────────────────────────────────────────────────────
+async function fade() {
+  term.style.opacity = '0';
+  await sleep(240);
+  term.style.opacity = '1';
+}
+
+async function run() {
+  while (true) {
+    await sceneSearch();
+    await fade();
+    await sceneApply();
+    await fade();
+    await sceneHistory();
+    await fade();
+  }
+}
+
+run();
+</script>
+</body>
+</html>

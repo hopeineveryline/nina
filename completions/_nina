@@ -1,0 +1,335 @@
+#compdef nina
+
+autoload -U is-at-least
+
+_nina() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_nina_commands" \
+"*::: :->nina" \
+&& ret=0
+    case $state in
+    (nina)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:nina-command-$line[1]:"
+        case $line[1] in
+            (apply)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--dry[]' \
+'--check[]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(back)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(history)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--tui[]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(go)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+':generation:_default' \
+&& ret=0
+;;
+(clean)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--all[]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(search)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+'::query:_default' \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--no-apply[]' \
+'-h[Print help]' \
+'--help[Print help]' \
+':package:_default' \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--no-apply[]' \
+'-h[Print help]' \
+'--help[Print help]' \
+':package:_default' \
+&& ret=0
+;;
+(try)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+'*::packages:_default' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--grep=[]:needle:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(edit)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+'::target:_default' \
+&& ret=0
+;;
+(check)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(diff)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+'::from:_default' \
+'::to:_default' \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--all[]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(update)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(upgrade)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--check[]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(log)
+_arguments "${_arguments_options[@]}" : \
+'--last=[]:count:_default' \
+'--on=[]:machine:_default' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(doctor)
+_arguments "${_arguments_options[@]}" : \
+'--on=[]:machine:_default' \
+'--all[]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+'::command:_default' \
+&& ret=0
+;;
+(hello)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(mood)
+_arguments "${_arguments_options[@]}" : \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_nina_commands] )) ||
+_nina_commands() {
+    local commands; commands=(
+'apply:' \
+'back:' \
+'history:' \
+'go:' \
+'clean:' \
+'search:' \
+'install:' \
+'remove:' \
+'try:' \
+'list:' \
+'edit:' \
+'check:' \
+'diff:' \
+'status:' \
+'update:' \
+'upgrade:' \
+'log:' \
+'doctor:' \
+'help:' \
+'hello:' \
+'mood:' \
+    )
+    _describe -t commands 'nina commands' commands "$@"
+}
+(( $+functions[_nina__apply_commands] )) ||
+_nina__apply_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina apply commands' commands "$@"
+}
+(( $+functions[_nina__back_commands] )) ||
+_nina__back_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina back commands' commands "$@"
+}
+(( $+functions[_nina__check_commands] )) ||
+_nina__check_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina check commands' commands "$@"
+}
+(( $+functions[_nina__clean_commands] )) ||
+_nina__clean_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina clean commands' commands "$@"
+}
+(( $+functions[_nina__diff_commands] )) ||
+_nina__diff_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina diff commands' commands "$@"
+}
+(( $+functions[_nina__doctor_commands] )) ||
+_nina__doctor_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina doctor commands' commands "$@"
+}
+(( $+functions[_nina__edit_commands] )) ||
+_nina__edit_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina edit commands' commands "$@"
+}
+(( $+functions[_nina__go_commands] )) ||
+_nina__go_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina go commands' commands "$@"
+}
+(( $+functions[_nina__hello_commands] )) ||
+_nina__hello_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina hello commands' commands "$@"
+}
+(( $+functions[_nina__help_commands] )) ||
+_nina__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina help commands' commands "$@"
+}
+(( $+functions[_nina__history_commands] )) ||
+_nina__history_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina history commands' commands "$@"
+}
+(( $+functions[_nina__install_commands] )) ||
+_nina__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina install commands' commands "$@"
+}
+(( $+functions[_nina__list_commands] )) ||
+_nina__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina list commands' commands "$@"
+}
+(( $+functions[_nina__log_commands] )) ||
+_nina__log_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina log commands' commands "$@"
+}
+(( $+functions[_nina__mood_commands] )) ||
+_nina__mood_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina mood commands' commands "$@"
+}
+(( $+functions[_nina__remove_commands] )) ||
+_nina__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina remove commands' commands "$@"
+}
+(( $+functions[_nina__search_commands] )) ||
+_nina__search_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina search commands' commands "$@"
+}
+(( $+functions[_nina__status_commands] )) ||
+_nina__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina status commands' commands "$@"
+}
+(( $+functions[_nina__try_commands] )) ||
+_nina__try_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina try commands' commands "$@"
+}
+(( $+functions[_nina__update_commands] )) ||
+_nina__update_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina update commands' commands "$@"
+}
+(( $+functions[_nina__upgrade_commands] )) ||
+_nina__upgrade_commands() {
+    local commands; commands=()
+    _describe -t commands 'nina upgrade commands' commands "$@"
+}
+
+if [ "$funcstack[1]" = "_nina" ]; then
+    _nina "$@"
+else
+    compdef _nina nina
+fi
