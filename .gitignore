@@ -4,3 +4,4 @@ target/
 .agent/
 CLAUDE.md
 kiln/
+hooks/install.sh

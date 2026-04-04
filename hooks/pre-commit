@@ -1,0 +1,19 @@
+#!/bin/sh
+# Pre-commit hook: ensure Cargo.toml version is bumped when source files change.
+
+cargo_changed=false
+src_changed=false
+
+for file in $(git diff --cached --name-only); do
+    case "$file" in
+        Cargo.toml) cargo_changed=true ;;
+        src/*)      src_changed=true ;;
+    esac
+done
+
+if [ "$src_changed" = true ] && [ "$cargo_changed" != true ]; then
+    echo "error: source files changed but Cargo.toml version was not bumped."
+    echo "  Update version in Cargo.toml before committing."
+    echo "  PATCH for fixes, MINOR for features, MAJOR for breaking changes."
+    exit 1
+fi
