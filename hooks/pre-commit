@@ -16,13 +16,3 @@ if [ "$src_changed" = true ] && [ "$cargo_changed" != true ]; then
     echo "  PATCH for fixes, MINOR for features, MAJOR for breaking changes."
     exit 1
 fi
-
-if [ "$cargo_changed" = true ]; then
-    version=$(grep '^version = ' Cargo.toml | sed 's/.*"\(.*\)".*/\1/')
-    if ! git tag | grep -q "^v$version\$"; then
-        echo "error: version bumped to $version but not tagged or released."
-        echo "  Run: git tag v$version && git push --tags"
-        echo "       gh release create v$version --generate-notes"
-        exit 1
-    fi
-fi

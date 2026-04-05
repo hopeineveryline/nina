@@ -114,24 +114,15 @@ nina hello        greet nina and see your configured machines
 
 ## install
 
-**one-liner (fast, no build):**
-```bash
-curl -fsSL "https://github.com/hopeineveryline/nina/releases/latest/download/nina-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/').tar.gz" -o /tmp/nina.tar.gz && tar xzf /tmp/nina.tar.gz -C /tmp && chmod +x /tmp/nina && mv /tmp/nina ~/bin/ && rm /tmp/nina.tar.gz
-```
-
-> ~2MB, no Nix, no Rust toolchain. works on Linux (x64/arm64) and macOS (x64/arm64).
-
-**with nix:**
+**fastest (flake, no install):**
 ```bash
 nix run github:hopeineveryline/nina
 ```
 
-or install to your profile:
+**install to your profile:**
 ```bash
 nix profile install github:hopeineveryline/nina
 ```
-
-> ⚠ nix builds from source (~2GB on first run). use the one-liner above for a instant install.
 
 **from a local checkout:**
 ```bash
