@@ -16,22 +16,18 @@ jobs:
             target: x86_64-unknown-linux-gnu
             artifact: nina-linux-x64
             runner: ubuntu-latest
-            extract: tar.gz
           - platform: linux-arm64
             target: aarch64-unknown-linux-gnu
             artifact: nina-linux-arm64
             runner: ubuntu-latest
-            extract: tar.gz
           - platform: macos-x64
             target: x86_64-apple-darwin
             artifact: nina-macos-x64
             runner: macos-13
-            extract: zip
           - platform: macos-arm64
             target: aarch64-apple-darwin
             artifact: nina-macos-arm64
             runner: macos-14
-            extract: zip
 
     runs-on: ${{ matrix.runner }}
     steps:
@@ -52,16 +48,8 @@ jobs:
         shell: bash
         run: |
           cd target/${{ matrix.target }}/release
-          case "${{ matrix.extract }}" in
-            tar.gz)
-              tar czf nina.tar.gz nina
-              echo "ASSET=nina.tar.gz" >> $GITHUB_ENV
-              ;;
-            zip)
-              zip nina.zip nina
-              echo "ASSET=nina.zip" >> $GITHUB_ENV
-              ;;
-          esac
+          tar czf nina.tar.gz nina
+          echo "ASSET=nina.tar.gz" >> $GITHUB_ENV
 
       - name: Upload asset
         uses: softprops/action-gh-release@v2
