@@ -151,7 +151,8 @@ async fn run_one_shot(ctx: &AppContext, command: Command, entered: Option<&str>)
 }
 
 async fn dispatch_command(ctx: &AppContext, command: Command) -> Result<()> {
-    match command {
+    crate::debug::log_state("dispatch", crate::session::command_name(&command));
+    let result = match command {
         Command::Apply(args) => commands::apply::run(ctx, args).await,
         Command::Back(args) => commands::back::run(ctx, args).await,
         Command::Build(args) => commands::build_cmd::run(ctx, args).await,
@@ -192,7 +193,9 @@ async fn dispatch_command(ctx: &AppContext, command: Command) -> Result<()> {
         Command::Help(args) => commands::help::run(ctx, args).await,
         Command::Hello(args) => commands::hello::run(ctx, args).await,
         Command::Mood(args) => commands::mood::run(ctx, args).await,
-    }
+    };
+    crate::debug::log_result("dispatch", result.is_ok());
+    result
 }
 
 async fn pulse(ctx: &AppContext, animation: DangoAnimation, millis: u64) {

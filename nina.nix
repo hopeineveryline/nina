@@ -6,7 +6,7 @@
 
 rustPlatform.buildRustPackage {
   pname = "nina";
-  version = "0.3.0";
+  version = (builtins.fromTOML (builtins.readFile ./Cargo.toml)).package.version;
 
   src = ./.;
   cargoLock.lockFile = ./Cargo.lock;

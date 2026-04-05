@@ -1,6 +1,7 @@
 mod commands;
 mod config;
 mod dango;
+mod debug;
 mod editor;
 mod errors;
 mod exec;
@@ -25,6 +26,8 @@ use commands::AppContext;
     disable_help_subcommand = true
 )]
 struct Cli {
+    #[arg(long, global = true)]
+    debug: bool,
     #[command(subcommand)]
     command: Option<Command>,
 }
@@ -80,10 +83,21 @@ enum Command {
 #[tokio::main]
 async fn main() -> Result<()> {
     let argv: Vec<String> = std::env::args().collect();
+
+    // Capture --debug before parsing (clap swallows it from argv if we don't)
+    let debug = argv.contains(&"--debug".to_string());
+    if debug {
+        debug::set_enabled(true);
+        debug::log_state("startup", &format!("nina startup, debug mode active, version {}", env!("CARGO_PKG_VERSION")));
+    }
+
     let cli = Cli::parse_from(&argv);
     let config = config::NinaConfig::load_or_bootstrap()?;
     let ctx = AppContext::new(config);
     let entered = argv.get(1..).map(|args| args.join(" "));
+    if debug::is_enabled() {
+        debug::log_state("command", entered.as_deref().unwrap_or("interactive prompt"));
+    }
     session::run(&ctx, cli, entered.as_deref()).await
 }
 

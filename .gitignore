@@ -5,3 +5,5 @@ target/
 CLAUDE.md
 kiln/
 hooks/install.sh
+AGENTS.md
+status.md

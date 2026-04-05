@@ -93,6 +93,7 @@ pub async fn run_machine_command(
     // animation clears its frames before any post-command output appears.
     let animation_handle: Option<tokio::task::JoinHandle<()>> =
         if ctx.config.animate && io::stdout().is_terminal() {
+            crate::debug::log_state("anim", &format!("starting animation for {}", command_name));
             terminal::size().ok().map(|(width, height)| {
                 let pos = crate::dango::position_from_pref(&ctx.config.dango_pos, width, height);
                 let anim = animation_for(command_name);

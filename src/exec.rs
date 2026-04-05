@@ -27,10 +27,12 @@ impl ExecResult {
 }
 
 pub async fn run(machine: &Machine, command_line: &str) -> Result<ExecResult> {
+    crate::debug::log_command(command_line, &machine.name);
     run_with_stream(machine, command_line, |_, _| {}).await
 }
 
 pub async fn run_attached(machine: &Machine, command_line: &str) -> Result<i32> {
+    crate::debug::log_command(command_line, &machine.name);
     match &machine.kind {
         MachineKind::Local => run_local_attached(command_line).await,
         MachineKind::Remote { host, port, user } => {
@@ -54,6 +56,7 @@ pub async fn run_with_stream<F>(
 where
     F: FnMut(bool, &str),
 {
+    crate::debug::log_command(command_line, &machine.name);
     match &machine.kind {
         MachineKind::Local => run_local(command_line, &mut on_line).await,
         MachineKind::Remote { host, port, user } => {
