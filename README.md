@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="demo.gif" alt="nina in action — package search, apply, and history browsing" width="720" />
+<img src="demo.gif" alt="nina — inline search, install confirmation, and rebuild in one calm terminal session" width="720" />
 
 <br/>
 

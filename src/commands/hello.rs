@@ -25,7 +25,7 @@ pub async fn run(ctx: &AppContext, _args: HelloArgs) -> Result<()> {
     }
 
     if ctx.config.animate {
-        ctx.output.excited("i brought a few kaomoji with me ♡");
+        ctx.output.excited("i hope you'll like these ♡");
     }
 
     ctx.output.blank();

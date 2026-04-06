@@ -8,7 +8,10 @@
 html, body {
   width: 720px;
   height: 460px;
-  background: #0d0e1a;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(191, 165, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, #15111f 0%, #0f0c16 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,238 +20,224 @@ html, body {
 
 .window {
   width: 700px;
-  border-radius: 11px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 22px 55px rgba(0,0,0,0.75);
-  border: 1px solid #1e1f30;
+  border: 1px solid rgba(191, 165, 255, 0.18);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.45);
+  background: #161220;
 }
 
 .titlebar {
-  background: #1c1d2e;
-  padding: 10px 14px;
-  display: flex;
+  background: linear-gradient(180deg, #282133 0%, #211b2c 100%);
+  padding: 12px 16px;
+  display: grid;
   align-items: center;
-  gap: 7px;
-  border-bottom: 1px solid #252638;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  border-bottom: 1px solid rgba(191, 165, 255, 0.12);
 }
 
-.dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
-.dot.r { background: #ff8fab; }
-.dot.y { background: #ffd6a5; }
-.dot.g { background: #b9fbc0; }
+.traffic { display: flex; gap: 8px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot.r { background: #c77c63; }
+.dot.y { background: #c3a268; }
+.dot.g { background: #8ea49a; }
 
-.title-text {
-  flex: 1;
-  text-align: center;
-  color: #3a3b55;
-  font-size: 12px;
-  letter-spacing: 0.2px;
-}
+.title-text { text-align: center; color: #a79aaf; font-size: 12px; letter-spacing: 0.04em; }
 
 .terminal {
-  background: #13141f;
-  padding: 16px 20px;
-  height: 420px;
+  height: 404px;
   overflow: hidden;
-  font-size: 13px;
-  line-height: 1.62;
-  color: #f8efff;
   position: relative;
+  padding: 18px 22px 20px;
+  color: #f8efff;
+  font-size: 14px;
+  line-height: 1.72;
+  background:
+    radial-gradient(circle at top right, rgba(191, 165, 255, 0.08), transparent 28%),
+    linear-gradient(180deg, #171320 0%, #120f19 100%);
 }
 
-.line { display: block; white-space: pre; }
+/* ── line reveal animation ─────────────────────────────────────────────── */
+.ln {
+  display: block;
+  opacity: 0;
+  animation: reveal 0.08s ease-out forwards;
+  white-space: pre-wrap;
+}
+.ln.shell  { color: #c9bad6; }
+.ln.border { color: #3a2f48; }
+.ln.title  { color: #ff9ac7; }
+.ln.prompt { color: #ff9ac7; }
+.ln.text   { color: #f8efff; }
+.ln.tag    { color: #ff9ac7; }
+.ln.arrow  { color: #c9bad6; }
+.ln.ok     { color: #9dffce; }
+.ln.warn   { color: #ffd166; }
+.ln.pkg    { color: #bfa5ff; }
+.ln.mute   { color: rgba(201, 186, 214, 0.86); }
+.ln.face   { color: #ff9ac7; }
+.ln.blank  { display: block; height: 0.9em; opacity: 0; }
 
-.shell  { color: #c9bad6; }
-.border { color: #3a2f48; }
-.title  { color: #ff9ac7; }
-.prompt { color: #ff9ac7; }
-.text   { color: #f8efff; }
-.tag    { color: #ff9ac7; }
-.arrow  { color: #c9bad6; }
-.mint   { color: #9dffce; }
-.lav    { color: #bfa5ff; }
-.mute   { color: #c9bad6; }
-.rose   { color: #ffb6c1; }
+.ln.select-wrap {
+  display: inline-block;
+  padding: 0 7px;
+  margin-left: -7px;
+  border-radius: 8px;
+  border: 1px solid rgba(191, 165, 255, 0.28);
+  background: rgba(191, 165, 255, 0.10);
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
 .cursor {
   display: inline-block;
-  width: 7px; height: 14px;
-  background: #bfa5ff;
-  vertical-align: -2px;
-  animation: blink 1.1s step-end infinite;
+  width: 0.55em;
+  height: 1em;
+  background: #c9bad6;
+  vertical-align: -0.12em;
+  opacity: 0;
+  animation: blink 1s steps(1) infinite;
 }
-.bubble {
+@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+/* ── kaomoji popup ────────────────────────────────────────────────────── */
+.kao {
   position: absolute;
-  right: 18px;
-  top: 20px;
-  min-width: 112px;
-  min-height: 76px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 12px;
+  top: 18px;
+  right: 22px;
+  background: #1e1830;
+  border: 1px solid #5a3f6a;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #ffd0e0;
   white-space: pre;
+  line-height: 1.45;
   text-align: center;
-  color: #ff9ac7;
-  border: 1px solid rgba(191, 165, 255, 0.3);
-  border-radius: 15px;
-  background: rgba(19, 16, 31, 0.94);
-  box-shadow: 0 14px 30px rgba(0,0,0,0.28);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,154,199,0.15);
+  opacity: 0;
+  transform: scale(0.7) translateY(-6px);
+  transition: opacity 0.15s, transform 0.15s;
 }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.kao.fire { opacity: 1; transform: scale(1) translateY(0); }
 </style>
 </head>
 <body>
 
 <div class="window">
   <div class="titlebar">
-    <div class="dot r"></div>
-    <div class="dot y"></div>
-    <div class="dot g"></div>
-    <div class="title-text">nina</div>
+    <div class="traffic"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+    <div class="title-text">june@kyoshi ~ nina</div>
+    <div></div>
   </div>
-  <div class="terminal" id="term"></div>
+
+  <div class="terminal" id="t">
+
+    <span class="ln shell" style="animation-delay:0.1s">$ <span class="text">nina search</span></span>
+    <span class="ln border" style="animation-delay:0.3s">  ┌─ searching packages ──────────────────────────┐</span>
+    <span class="ln mute" style="animation-delay:0.38s">  🔍 ripgrep█   3 results</span>
+    <span class="ln border" style="animation-delay:0.46s">  ├───────────────────────────────────────────────┤</span>
+
+    <span class="ln" style="animation-delay:0.55s"><span class="select-wrap"> <span class="pkg">▸ ripgrep</span>       <span class="text">14.1.0</span>  <span class="mute">GPL-2.0-or-later</span></span></span>
+    <span class="ln mute"  style="animation-delay:0.63s">    <span class="pkg">ripgrep-all</span>    <span class="text">0.10.0</span>  <span class="mute">GPL-3.0-or-later</span></span>
+    <span class="ln mute"  style="animation-delay:0.71s">    <span class="pkg">ripgrep-fixed</span> <span class="text"> 0.1.0</span>  <span class="mute">GPL-3.0-or-later</span></span>
+
+    <span class="ln border" style="animation-delay:0.80s">  ├───────────────────────────────────────────────┤</span>
+    <span class="ln mute"  style="animation-delay:0.88s">    <span class="mute">ripgrep           14.1.0  ·  recursively search directories</span></span>
+    <span class="ln mute"  style="animation-delay:0.96s">    <span class="mute">homepage   https://github.com/BurntSushi/ripgrep</span></span>
+    <span class="ln mute"  style="animation-delay:1.04s">    <span class="mute">install    ripgrep</span></span>
+    <span class="ln border" style="animation-delay:1.12s">  └───────────────────────────────────────────────┘</span>
+    <span class="ln mute"  style="animation-delay:1.20s">  <span class="mute">[i] install  [t] try  [c] copy  [↑↓] navigate  [esc] exit</span></span>
+    <span class="ln blank" style="animation-delay:1.28s"></span>
+
+    <!-- kaomoji popup fires here -->
+    <div class="kao" id="k" style="animation-delay:1.38s">
+  .｡.:*♡
+ (˶ᵔ ᵕ ᵔ˶)</div>
+
+    <span class="ln face" style="animation-delay:1.45s">(˶ᵔ ᵕ ᵔ˶) <span class="text">pick the one you want and i'll stay right here.</span></span>
+    <span class="ln blank" style="animation-delay:1.55s"></span>
+    <span class="ln shell" style="animation-delay:1.65s">$ <span class="text">nina install ripgrep</span></span>
+    <span class="ln face" style="animation-delay:1.80s">(˶ᵔ ᵕ ᵔ˶) <span class="text">found a few matches for 'ripgrep' on kyoshi.</span></span>
+    <span class="ln mute"  style="animation-delay:1.88s">           let's pick one right here ♡</span>
+    <span class="ln blank"  style="animation-delay:1.96s"></span>
+    <span class="ln mute"  style="animation-delay:2.04s">  search   ripgrep</span>
+    <span class="ln mute"  style="animation-delay:2.12s">  menu     [enter] install selected  ·  [j/k] browse  ·  [d] details  ·  [q] cancel</span>
+    <span class="ln blank"  style="animation-delay:2.20s"></span>
+
+    <span class="ln" style="animation-delay:2.28s"><span class="select-wrap"> <span class="pkg">▸ 1. ripgrep</span>         <span class="text">14.1.0</span></span></span>
+    <span class="ln mute"  style="animation-delay:2.36s">    <span class="pkg">  2. ripgrep-all</span>      <span class="text">0.10.0</span></span>
+    <span class="ln mute"  style="animation-delay:2.44s">    <span class="pkg">  3. ripgrep-fixed</span>    <span class="text"> 0.1.0</span></span>
+    <span class="ln blank"  style="animation-delay:2.52s"></span>
+    <span class="ln mute"  style="animation-delay:2.60s">  preview</span>
+    <span class="ln mute"  style="animation-delay:2.68s">  attribute   ripgrep</span>
+    <span class="ln mute"  style="animation-delay:2.76s">  version     14.1.0</span>
+    <span class="ln mute"  style="animation-delay:2.84s">  license     GPL-2.0-or-later</span>
+    <span class="ln mute"  style="animation-delay:2.92s">  homepage    https://github.com/BurntSushi/ripgrep</span>
+    <span class="ln blank"  style="animation-delay:3.00s"></span>
+    <span class="ln mute"  style="animation-delay:3.08s">  choice > <span class="cursor"></span></span>
+    <span class="ln mute"  style="animation-delay:3.75s">  choice > </span>
+    <span class="ln blank"  style="animation-delay:3.83s"></span>
+    <span class="ln tag"   style="animation-delay:3.92s">  ✦ <span class="text">adding ripgrep to your config on kyoshi...</span></span>
+    <span class="ln border" style="animation-delay:4.00s">  ────────────────────────────────────────</span>
+    <span class="ln mute"  style="animation-delay:4.08s">  -   # nina added: ripgrep</span>
+    <span class="ln text"  style="animation-delay:4.16s">  +   environment.systemPackages = pkgs.lib.mkForce [</span>
+    <span class="ln ok"    style="animation-delay:4.24s">  +     pkgs.ripgrep,</span>
+    <span class="ln ok"    style="animation-delay:4.32s">  +   ];</span>
+    <span class="ln border" style="animation-delay:4.40s">  ────────────────────────────────────────</span>
+    <span class="ln warn"  style="animation-delay:4.50s">  ⚠ <span class="text">write this change to configuration.nix?</span></span>
+    <span class="ln mute"  style="animation-delay:4.60s">  choice > y</span>
+    <span class="ln ok"    style="animation-delay:5.00s">  ✓ <span class="text">added ripgrep to /etc/nixos/configuration.nix ♡</span></span>
+    <span class="ln blank"  style="animation-delay:5.10s"></span>
+    <span class="ln shell" style="animation-delay:5.20s">$ <span class="text">nina apply</span></span>
+    <span class="ln warn"  style="animation-delay:5.35s">  ⚠ <span class="text">apply now?</span></span>
+    <span class="ln mute"  style="animation-delay:5.45s">  choice > y</span>
+    <span class="ln blank"  style="animation-delay:5.55s"></span>
+    <span class="ln arrow"  style="animation-delay:5.65s">  → <span class="mute">patching it in...</span></span>
+    <span class="ln mute"  style="animation-delay:5.75s">  running: sudo nixos-rebuild switch --fast</span>
+    <span class="ln mute"  style="animation-delay:5.90s">  evaluating NixOS config...</span>
+    <span class="ln mute"  style="animation-delay:6.10s">  building NixOS...</span>
+    <span class="ln mute"  style="animation-delay:6.30s">  installing...</span>
+    <span class="ln mute"  style="animation-delay:6.50s">  [                                              ]   0%</span>
+    <span class="ln mute"  style="animation-delay:6.65s">  [█████                                         ]  16%</span>
+    <span class="ln mute"  style="animation-delay:6.80s">  [██████████████                                ]  33%</span>
+    <span class="ln mute"  style="animation-delay:6.95s">  [████████████████████████                      ]  50%</span>
+    <span class="ln mute"  style="animation-delay:7.10s">  [██████████████████████████████████          ]  66%</span>
+    <span class="ln mute"  style="animation-delay:7.25s">  [████████████████████████████████████████    ]  83%</span>
+    <span class="ln mute"  style="animation-delay:7.40s">  [████████████████████████████████████████████] 100%</span>
+    <span class="ln arrow"  style="animation-delay:7.55s">  → <span class="mute">switching to new configuration...</span></span>
+    <span class="ln blank"  style="animation-delay:7.65s"></span>
+
+    <!-- happy kaomoji -->
+    <div class="kao" id="k2" style="animation-delay:7.75s">
+  ✦ ｡˚
+ (⑅˘꒳˘)♡</div>
+
+    <span class="ln face" style="animation-delay:7.85s">(⑅˘꒳˘)♡ <span class="text">all done — kyoshi is on generation 142 now ♡</span></span>
+    <span class="ln blank"  style="animation-delay:7.95s"></span>
+
+    <span class="ln shell" style="animation-delay:8.05s">$ <span class="text">nina search</span></span>
+
+  </div>
 </div>
 
 <script>
-const term = document.getElementById('term');
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+  // fire kaomoji popups at the right time
+  const k = document.getElementById('k');
+  const k2 = document.getElementById('k2');
 
-function el(tag, cls, text) {
-  const node = document.createElement(tag);
-  if (cls) node.className = cls;
-  if (text != null) node.textContent = text;
-  return node;
-}
-
-function line(parts) {
-  const row = el('div', 'line');
-  for (const part of parts) row.appendChild(el('span', part.cls, part.text));
-  return row;
-}
-
-function cursor() {
-  return el('span', 'cursor');
-}
-
-async function typeCommand(command) {
-  const rowEl = el('div', 'line');
-  const shell = el('span', 'shell', '$ ');
-  const cmd = el('span', 'text', '');
-  const cur = cursor();
-  rowEl.appendChild(shell);
-  rowEl.appendChild(cmd);
-  rowEl.appendChild(cur);
-  term.appendChild(rowEl);
-
-  await sleep(420);
-  for (const ch of command) {
-    cmd.textContent += ch;
-    await sleep(28);
+  function fireKao(el) {
+    el.style.opacity = '1';
+    el.style.transform = 'scale(1) translateY(0)';
   }
-  await sleep(280);
-  cur.remove();
-}
 
-function bubble(text) {
-  const node = el('div', 'bubble', text);
-  term.appendChild(node);
-  return node;
-}
-
-const scenes = [
-  {
-    command: 'nina help',
-    bubble: '(˶ᵔ ᵕ ᵔ˶)',
-    doneBubble: '(˶ᵔ ᵕ ᵔ˶)',
-    lines: [
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '╭───────────────────────────────────────────────────────────╮' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '│' }, { cls: 'title', text: ' nina is moving                                           ' }, { cls: 'border', text: '│' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '│' }, { cls: 'text', text: " pulling the useful parts forward so they're easy to read." }, { cls: 'border', text: '│' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '╰───────────────────────────────────────────────────────────╯' }],
-      [{ cls: null, text: '  ' }, { cls: 'prompt', text: 'nina>' }, { cls: 'text', text: ' help' }],
-      [{ cls: null, text: '  ' }, { cls: 'tag', text: '[scan]' }, { cls: 'text', text: " i'm gathering the parts worth looking at first." }],
-      [{ cls: null, text: '  ' }, { cls: 'arrow', text: '→' }, { cls: 'arrow', text: " i'll keep the output grouped and easy to scan." }],
-      [{ cls: 'title', text: '(˶ᵔ ᵕ ᵔ˶)' }, { cls: 'text', text: ' nina command guide ♡' }],
-      [{ cls: 'text', text: '  apply     rebuild + switch' }],
-      [{ cls: 'text', text: '  hello     meet nina' }],
-      [{ cls: 'text', text: '  search    search nixpkgs inline from the prompt' }],
-      [{ cls: 'text', text: '  install   add a package to configuration.nix' }],
-      [{ cls: null, text: '  ' }, { cls: 'mint', text: '[done]' }, { cls: 'text', text: ' that should feel easier to read now.' }],
-      [{ cls: null, text: '  ' }, { cls: 'mute', text: 'elapsed' }, { cls: 'mint', text: '  0ms' }],
-    ],
-  },
-  {
-    command: 'nina hello',
-    bubble: '(˶ᵔ ᵕ ᵔ˶)',
-    doneBubble: '(ง ˙˘˙ )ว',
-    lines: [
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '╭───────────────────────────────╮' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '│' }, { cls: 'title', text: ' nina is moving               ' }, { cls: 'border', text: '│' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '│' }, { cls: 'text', text: ' starting with a little hello.' }, { cls: 'border', text: '│' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '╰───────────────────────────────╯' }],
-      [{ cls: null, text: '  ' }, { cls: 'prompt', text: 'nina>' }, { cls: 'text', text: ' hello' }],
-      [{ cls: null, text: '  ' }, { cls: 'tag', text: '[hi]' }, { cls: 'text', text: " i'm finding your machines now." }],
-      [{ cls: null, text: '  ' }, { cls: 'arrow', text: '→' }, { cls: 'arrow', text: ' this one should stay light and friendly.' }],
-      [{ cls: 'title', text: '(˶ᵔ ᵕ ᵔ˶)' }, { cls: 'text', text: " hi! i'm nina~" }],
-      [{ cls: 'mute', text: "i'm your calm little nix helper." }],
-      [{ cls: 'mute', text: 'i love declarative systems and calm terminal vibes ♡' }],
-      [{ cls: 'mute', text: "i'm managing:" }],
-      [{ cls: 'text', text: '  - local (local, default)' }],
-      [{ cls: 'title', text: '(ง ˙˘˙ )ว' }, { cls: 'text', text: ' i brought a few kaomoji with me ♡' }],
-      [{ cls: null, text: '  ' }, { cls: 'mint', text: '[done]' }, { cls: 'text', text: ' hello all set ♡' }],
-    ],
-  },
-  {
-    command: 'nina search ripgrep',
-    bubble: '(˶ᵔ ᵕ ᵔ˶)',
-    doneBubble: '(｡☌ᴗ☌｡)',
-    lines: [
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '╭───────────────────────────────────────────────────────────╮' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '│' }, { cls: 'title', text: ' nina is moving                                           ' }, { cls: 'border', text: '│' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '│' }, { cls: 'text', text: " pulling the useful parts forward so they're easy to read." }, { cls: 'border', text: '│' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '╰───────────────────────────────────────────────────────────╯' }],
-      [{ cls: null, text: '  ' }, { cls: 'prompt', text: 'nina>' }, { cls: 'text', text: ' search ripgrep' }],
-      [{ cls: null, text: '  ' }, { cls: 'tag', text: '[scan]' }, { cls: 'text', text: " i'm gathering the parts worth looking at first." }],
-      [{ cls: null, text: '  ' }, { cls: 'arrow', text: '→' }, { cls: 'arrow', text: " i'll keep the output grouped and easy to scan." }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '╭──────────────────────────────────────────────╮' }],
-      [{ cls: null, text: '  ' }, { cls: 'text', text: '│ 🔍 ripgrep█                          3 results │' }],
-      [{ cls: null, text: '  ' }, { cls: 'lav', text: '│   ▸ ripgrep           14.1.0  unknown        │' }],
-      [{ cls: null, text: '  ' }, { cls: 'lav', text: '│     ripgrep-all       0.10.0  unknown        │' }],
-      [{ cls: null, text: '  ' }, { cls: 'lav', text: '│     ripgrep-fixed     0.1.0   unknown        │' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '│ ──────────────────────────────────────────── │' }],
-      [{ cls: null, text: '  ' }, { cls: 'text', text: '│ ripgrep · 14.1.0 · unknown · size ?          │' }],
-      [{ cls: null, text: '  ' }, { cls: 'mute', text: '│ recursively searches the current directory…  │' }],
-      [{ cls: null, text: '  ' }, { cls: 'mute', text: '│ homepage   https://github.com/BurntSushi/…   │' }],
-      [{ cls: null, text: '  ' }, { cls: 'text', text: '│ install    ripgrep                           │' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '│ ──────────────────────────────────────────── │' }],
-      [{ cls: null, text: '  ' }, { cls: 'mute', text: '│ [i] install [t] try [c] copy [↑↓] [esc] exit │' }],
-      [{ cls: null, text: '  ' }, { cls: 'border', text: '╰──────────────────────────────────────────────╯' }],
-    ],
-  },
-];
-
-async function renderScene(scene) {
-  term.innerHTML = '';
-  const box = bubble(scene.bubble);
-  await typeCommand(scene.command);
-  await sleep(180);
-  for (const parts of scene.lines) {
-    term.appendChild(line(parts));
-    await sleep(110);
-  }
-  box.textContent = scene.doneBubble;
-  await sleep(2000);
-}
-
-async function play() {
-  while (true) {
-    for (const scene of scenes) {
-      await renderScene(scene);
-    }
-  }
-}
-
-play();
+  // After CSS animation delay fires, add the .fire class
+  setTimeout(() => { if(k) k.classList.add('fire'); }, 1380);
+  setTimeout(() => { if(k2) k2.classList.add('fire'); }, 7750);
 </script>
 </body>
 </html>
