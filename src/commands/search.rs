@@ -16,7 +16,6 @@ pub async fn run(ctx: &AppContext, args: SearchArgs) -> Result<()> {
         SearchMode::Packages,
         args.query.unwrap_or_default(),
         ctx.config.animate,
-        ctx.config.dango_pos.clone(),
     );
 
     match widget.run().await? {

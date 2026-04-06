@@ -47,7 +47,7 @@ pub async fn run(ctx: &AppContext, args: InstallArgs) -> Result<()> {
                 format!(" closest matches: {}", suggestions.join(", "))
             };
             return Err(anyhow!(
-                "i couldn't find an exact nixpkgs match for '{}' . try: nina search {}.{}",
+                "i couldn't find an exact nixpkgs match for '{}'. try: nina search {}.{}",
                 args.package,
                 args.package,
                 extra

@@ -7,3 +7,4 @@ kiln/
 hooks/install.sh
 AGENTS.md
 status.md
+.gstack/

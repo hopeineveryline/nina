@@ -13,7 +13,7 @@
 [![tui](https://img.shields.io/badge/interactive-tui-c8b6ff?style=flat-square)](https://github.com/ratatui-org/ratatui)
 [![license](https://img.shields.io/badge/license-MIT-ffc8dd?style=flat-square)](./LICENSE)
 
-*a cozy CLI/TUI that wraps nixos-rebuild, generation browsing, inline package search, and diagnostics in one warm interface* 🍡
+*a cozy CLI/TUI that wraps nixos-rebuild, generation browsing, inline package search, and diagnostics in one warm interface* ♡
 
 </div>
 
@@ -25,7 +25,7 @@ nixos is powerful — but its default commands are a wall of flags, cryptic erro
 
 | the usual way | with nina |
 |---|---|
-| `sudo nixos-rebuild switch` | `nina apply` — with a dango mascot sweeping your terminal |
+| `sudo nixos-rebuild switch` | `nina apply` — with a calm little runway before the rebuild starts |
 | `nix search nixpkgs ripgrep` | `nina search` — inline search attached to the prompt with preview + one-key actions |
 | `nix-env --list-generations` | `nina history` — interactive browser, diffs between generations |
 | `vim /etc/nixos/configuration.nix` (no safety net) | `nina edit` — auto-backup, diff preview, rollback if rebuild fails |
@@ -55,11 +55,11 @@ manage multiple NixOS machines with `--on <machine>`. SSH-based, key-auth, fully
 **🎓 teach mode**
 not sure what nina is actually running? set `teach: true` in `~/.nina.conf` and she'll print the exact nix commands before executing them.
 
-**🍡 dango mascot + tiny kaomoji bursts**
-she walks, sweeps, waves, dances, and cheers. Nina also does little occasional kaomoji reactions for common interactions. purely optional. entirely delightful.
+**(˶ᵔ ᵕ ᵔ˶) kaomoji reactions**
+nina uses little kaomoji reactions in the inline tools and a soft command runway in one-shot mode. purely optional. easy to turn off.
 
 **💬 living prompt + command runway**
-run plain `nina` and you get a tiny interactive prompt instead of a dead one-liner. run `nina <command>` and she now pauses just long enough to frame the action, animate the dango, keep you posted with grouped colorful status lines, and then bow out.
+run plain `nina` and you get a tiny interactive prompt instead of a dead one-liner. run `nina <command>` and she pauses just long enough to frame the action, keep you posted with grouped colorful status lines, and then step out of the way.
 
 ---
 
@@ -158,7 +158,6 @@ nix installs get completions automatically via `nina.nix`.
 src/
   commands/    one file per command
   tui/         ratatui history UI + inline search widget
-  dango.rs     mascot animations
   editor.rs    safe config editing
   errors.rs    friendly error translation
   config.rs    ~/.nina.conf parsing

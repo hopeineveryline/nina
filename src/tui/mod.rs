@@ -1,5 +1,6 @@
 pub mod inline_search;
 pub mod inline_search_widget;
+pub mod kaomoji;
 
 use anyhow::Result;
 use crossterm::{

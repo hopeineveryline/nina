@@ -1,6 +1,5 @@
 mod commands;
 mod config;
-mod dango;
 mod debug;
 mod editor;
 mod errors;

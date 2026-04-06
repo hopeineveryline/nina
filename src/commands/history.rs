@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use clap::Args;
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use ratatui::{
-    layout::{Constraint, Direction, Layout, Rect},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     widgets::{Block, Borders, Clear, List, ListItem, Paragraph},
     Frame,
@@ -56,7 +56,6 @@ pub async fn run(ctx: &AppContext, args: HistoryArgs) -> Result<()> {
         machine.name.clone(),
         generations,
         ctx.config.animate,
-        ctx.config.dango_pos.clone(),
     );
     match app.run().await? {
         Some(HistoryOutcome::Switch(generation)) => {
@@ -90,7 +89,6 @@ struct HistoryApp {
     selected: usize,
     confirm: Option<HistoryOutcome>,
     animate: bool,
-    dango_pos: String,
 }
 
 impl HistoryApp {
@@ -98,7 +96,6 @@ impl HistoryApp {
         machine: String,
         generations: Vec<GenerationEntry>,
         animate: bool,
-        dango_pos: String,
     ) -> Self {
         let selected = generations.iter().position(|row| row.current).unwrap_or(0);
         Self {
@@ -107,7 +104,6 @@ impl HistoryApp {
             selected,
             confirm: None,
             animate,
-            dango_pos,
         }
     }
 
@@ -196,8 +192,8 @@ impl HistoryApp {
             .split(area);
         let body = Layout::default()
             .direction(Direction::Horizontal)
-            .constraints(if self.animate && self.dango_pos != "off" {
-                [Constraint::Min(20), Constraint::Length(6)]
+            .constraints(if self.animate {
+                [Constraint::Min(20), Constraint::Length(14)]
             } else {
                 [Constraint::Min(20), Constraint::Length(0)]
             })
@@ -238,17 +234,21 @@ impl HistoryApp {
         .block(Block::default().borders(Borders::ALL).title("keys"));
         frame.render_widget(footer, layout[1]);
 
-        if self.animate && self.dango_pos != "off" && body[1].width >= 6 && body[1].height >= 5 {
-            let dango_area = Rect {
+        if self.animate && body[1].width >= 12 && body[1].height >= 5 {
+            let kaomoji_area = Rect {
                 x: body[1].x,
-                y: body[1].y + body[1].height.saturating_sub(5),
-                width: 6,
-                height: 5,
+                y: body[1].y + body[1].height.saturating_sub(4),
+                width: body[1].width,
+                height: 4,
             };
-            let dango =
-                crate::dango::frame_at(crate::dango::DangoAnimation::WalkBack, self.selected);
-            let widget = Paragraph::new(dango);
-            frame.render_widget(widget, dango_area);
+            let widget = Paragraph::new(format!(
+                "{}\n{}",
+                self.kaomoji(),
+                self.kaomoji_label()
+            ))
+            .alignment(Alignment::Center)
+            .style(Style::default().fg(Color::Rgb(255, 220, 230)));
+            frame.render_widget(widget, kaomoji_area);
         }
 
         if let Some(confirm) = &self.confirm {
@@ -276,6 +276,26 @@ impl HistoryApp {
             .iter()
             .find(|row| row.current)
             .map(|row| row.generation)
+    }
+
+    fn kaomoji(&self) -> &'static str {
+        if self.confirm.is_some() {
+            "( •̀ω•́ )✧"
+        } else if self.generations[self.selected].current {
+            "(˶ᵔ ᵕ ᵔ˶)"
+        } else {
+            "(っ˘ω˘ς )"
+        }
+    }
+
+    fn kaomoji_label(&self) -> &'static str {
+        if self.confirm.is_some() {
+            "ready"
+        } else if self.generations[self.selected].current {
+            "current"
+        } else {
+            "rewind"
+        }
     }
 }
 

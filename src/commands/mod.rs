@@ -41,8 +41,7 @@ pub mod upgrade;
 
 use anyhow::{anyhow, Context, Result};
 use chrono::Utc;
-use crossterm::terminal;
-use std::io::{self, IsTerminal, Write};
+use std::io::{self, Write};
 use std::path::Path;
 use std::time::Instant;
 
@@ -88,25 +87,6 @@ pub async fn run_machine_command(
         return Ok(());
     }
 
-    // Spawn the animation so it runs concurrently with the command.
-    // We await the animation handle AFTER the command finishes, ensuring the
-    // animation clears its frames before any post-command output appears.
-    let animation_handle: Option<tokio::task::JoinHandle<()>> =
-        if ctx.config.animate && io::stdout().is_terminal() {
-            crate::debug::log_state("anim", &format!("starting animation for {}", command_name));
-            terminal::size().ok().map(|(width, height)| {
-                let pos = crate::dango::position_from_pref(&ctx.config.dango_pos, width, height);
-                let anim = animation_for(command_name);
-                tokio::spawn(async move {
-                    let player = crate::dango::DangoPlayer::start(anim, pos);
-                    tokio::time::sleep(std::time::Duration::from_millis(200)).await;
-                    player.stop().await;
-                })
-            })
-        } else {
-            None
-        };
-
     let gen_before = current_generation(&machine).await.ok().flatten();
     let started = Instant::now();
     let result = crate::exec::run_with_stream(&machine, command_line, |is_stderr, line| {
@@ -120,15 +100,9 @@ pub async fn run_machine_command(
     let elapsed = started.elapsed().as_millis() as u64;
     let gen_after = current_generation(&machine).await.ok().flatten();
 
-    // Block until the animation finishes so no frames intermix with post-command output.
-    if let Some(handle) = animation_handle {
-        let _ = handle.await;
-    }
-
     match result {
         Ok(output) => {
             if output.success() {
-                play_reaction(ctx, crate::dango::DangoAnimation::Happy);
                 ctx.output.success("done! ♡");
                 if let (Some(before), Some(after)) = (gen_before, gen_after) {
                     if before != after {
@@ -149,7 +123,6 @@ pub async fn run_machine_command(
             }
 
             let friendly = translate_nix_error(&output.stderr);
-            play_reaction(ctx, crate::dango::DangoAnimation::Sad);
             ctx.output.error(&friendly.summary);
             if !friendly.detail.trim().is_empty() {
                 eprintln!("{}", friendly.detail);
@@ -234,26 +207,6 @@ pub async fn run_attached_machine_command(
         gen_after,
     )?;
     Err(anyhow!("command failed"))
-}
-
-fn animation_for(command_name: &str) -> crate::dango::DangoAnimation {
-    match command_name {
-        "clean" => crate::dango::DangoAnimation::Sweep,
-        "back" => crate::dango::DangoAnimation::WalkBack,
-        "try" => crate::dango::DangoAnimation::Wave,
-        _ => crate::dango::DangoAnimation::Idle,
-    }
-}
-
-fn play_reaction(ctx: &AppContext, animation: crate::dango::DangoAnimation) {
-    if !(ctx.config.animate && io::stdout().is_terminal()) {
-        return;
-    }
-
-    if let Ok((width, height)) = terminal::size() {
-        let pos = crate::dango::position_from_pref(&ctx.config.dango_pos, width, height);
-        let _ = crate::dango::DangoPlayer::play_once(animation, pos);
-    }
 }
 
 pub fn confirm_action(confirm_enabled: bool, prompt: &str) -> Result<bool> {

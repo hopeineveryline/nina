@@ -95,7 +95,6 @@ mod tests {
             color: true,
             teach: true,
             animate: true,
-            dango_pos: "auto".to_string(),
             machines: vec![
                 MachineConfig {
                     name: "desktop".to_string(),

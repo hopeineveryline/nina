@@ -19,8 +19,6 @@ pub struct NinaConfig {
     pub teach: bool,
     #[serde(default = "default_true")]
     pub animate: bool,
-    #[serde(default = "default_dango_pos")]
-    pub dango_pos: String,
     #[serde(default)]
     pub machines: Vec<MachineConfig>,
 }
@@ -56,10 +54,6 @@ fn default_true() -> bool {
     true
 }
 
-fn default_dango_pos() -> String {
-    "auto".to_string()
-}
-
 impl Default for NinaConfig {
     fn default() -> Self {
         let hostname = env::var("HOSTNAME").unwrap_or_else(|_| "local".to_string());
@@ -70,7 +64,6 @@ impl Default for NinaConfig {
             color: default_true(),
             teach: default_true(),
             animate: default_true(),
-            dango_pos: default_dango_pos(),
             machines: vec![MachineConfig {
                 name: hostname,
                 config: "/etc/nixos".to_string(),
@@ -157,11 +150,10 @@ fn bootstrap_wizard() -> Result<NinaConfig> {
         editor,
         generations: default_generations(),
         confirm: default_true(),
-        color: default_true(),
-        teach: default_true(),
-        animate: default_true(),
-        dango_pos: default_dango_pos(),
-        machines: vec![MachineConfig {
+            color: default_true(),
+            teach: default_true(),
+            animate: default_true(),
+            machines: vec![MachineConfig {
             name: machine_name,
             config: config_dir,
             local,

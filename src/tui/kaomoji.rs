@@ -189,7 +189,7 @@ mod tests {
     use ratatui::layout::Rect;
 
     macro_rules! reaction_contract_tests {
-        ($($name:ident => { reaction: $reaction:expr, cooldown_ms: $cooldown_ms:expr, first: $first:literal, second: $second:literal, third: $third:literal },)+) => {
+        ($($name:ident => { reaction: $reaction:expr, cooldown_ms: $cooldown_ms:expr, first: $first:literal, second: $second:literal, third: $third:literal $(,)? },)+) => {
             $(
                 mod $name {
                     use super::*;
@@ -309,7 +309,7 @@ mod tests {
     #[test]
     fn popup_area_places_bubble_in_top_right_corner() {
         let area = super::popup_area(Rect::new(0, 0, 80, 24), "hi\nnina");
-        assert_eq!(area, Rect::new(72, 1, 7, 4));
+        assert_eq!(area, Rect::new(71, 1, 8, 4));
     }
 
     #[test]

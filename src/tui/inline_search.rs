@@ -6,12 +6,14 @@ use tokio::task::JoinHandle;
 
 use crate::{
     commands::package_attr_for_config,
-    dango::{frame_at, DangoAnimation},
     options::{query_options, NixOption},
     packages::{query_packages, NixPackage},
 };
 
-use super::inline_search_widget::{self, InlineSearchRenderModel};
+use super::{
+    inline_search_widget::{self, InlineSearchRenderModel},
+    kaomoji::{KaomojiBurst, KaomojiReaction},
+};
 
 const INLINE_HEIGHT: u16 = 18;
 const RESULT_ROWS: usize = 5;
@@ -45,7 +47,7 @@ pub struct SearchWidget {
     selected: usize,
     state: WidgetState,
     animate: bool,
-    dango_pos: String,
+    burst: KaomojiBurst,
     last_edit: Option<Instant>,
     search_task: Option<JoinHandle<Result<SearchBatch>>>,
     frame_tick: usize,
@@ -77,10 +79,9 @@ impl SearchWidget {
         mode: SearchMode,
         initial_query: impl Into<String>,
         animate: bool,
-        dango_pos: impl Into<String>,
     ) -> Self {
         let query = initial_query.into();
-        Self {
+        let mut widget = Self {
             mode,
             query: query.clone(),
             package_results: Vec::new(),
@@ -88,12 +89,16 @@ impl SearchWidget {
             selected: 0,
             state: WidgetState::Browsing,
             animate,
-            dango_pos: dango_pos.into(),
+            burst: KaomojiBurst::default(),
             last_edit: (!query.trim().is_empty())
                 .then_some(Instant::now() - Duration::from_millis(250)),
             search_task: None,
             frame_tick: 0,
+        };
+        if widget.animate {
+            widget.burst.maybe_trigger(KaomojiReaction::Prompt);
         }
+        widget
     }
 
     pub async fn run(mut self) -> Result<Option<InlineSearchOutcome>> {
@@ -117,6 +122,9 @@ impl SearchWidget {
             terminal.draw(|frame| {
                 let model = self.render_model();
                 inline_search_widget::render(frame, frame.size(), &model);
+                if self.animate {
+                    self.burst.render(frame, frame.size());
+                }
             })?;
 
             if event::poll(Duration::from_millis(50))? {
@@ -152,7 +160,12 @@ impl SearchWidget {
 
     fn handle_key(&mut self, code: KeyCode) -> Result<SearchControl> {
         Ok(match code {
-            KeyCode::Esc => SearchControl::Finish(None, WidgetState::Exiting),
+            KeyCode::Esc => {
+                if self.animate {
+                    self.burst.maybe_trigger(KaomojiReaction::Cancel);
+                }
+                SearchControl::Finish(None, WidgetState::Exiting)
+            }
             KeyCode::Up => {
                 if self.selected > 0 {
                     self.selected -= 1;
@@ -166,63 +179,69 @@ impl SearchWidget {
                 SearchControl::Continue
             }
             KeyCode::Char('i') => match self.mode {
-                SearchMode::Packages => self
-                    .selected_package()
-                    .map(|pkg| {
-                        SearchControl::Finish(
-                            Some(InlineSearchOutcome::InstallPackage(package_ref(pkg))),
-                            WidgetState::Acting,
-                        )
-                    })
-                    .unwrap_or(SearchControl::Continue),
-                SearchMode::Options => self
-                    .selected_option()
-                    .map(|option| {
-                        SearchControl::Finish(
-                            Some(InlineSearchOutcome::AddOption {
-                                option_name: option.name.clone(),
-                                snippet: snippet_for(option),
-                            }),
-                            WidgetState::Acting,
-                        )
-                    })
-                    .unwrap_or(SearchControl::Continue),
+                SearchMode::Packages => {
+                    let outcome = self
+                        .selected_package()
+                        .map(|pkg| InlineSearchOutcome::InstallPackage(package_ref(pkg)));
+                    if outcome.is_some() && self.animate {
+                        self.burst.maybe_trigger(KaomojiReaction::SearchReady);
+                    }
+                    outcome
+                        .map(|outcome| SearchControl::Finish(Some(outcome), WidgetState::Acting))
+                        .unwrap_or(SearchControl::Continue)
+                }
+                SearchMode::Options => {
+                    let outcome = self.selected_option().map(|option| InlineSearchOutcome::AddOption {
+                        option_name: option.name.clone(),
+                        snippet: snippet_for(option),
+                    });
+                    if outcome.is_some() && self.animate {
+                        self.burst.maybe_trigger(KaomojiReaction::DetailPeek);
+                    }
+                    outcome
+                        .map(|outcome| SearchControl::Finish(Some(outcome), WidgetState::Acting))
+                        .unwrap_or(SearchControl::Continue)
+                }
             },
-            KeyCode::Char('t') if self.mode == SearchMode::Packages => self
-                .selected_package()
-                .map(|pkg| {
-                    SearchControl::Finish(
-                        Some(InlineSearchOutcome::TryPackage(package_ref(pkg))),
-                        WidgetState::Acting,
-                    )
-                })
-                .unwrap_or(SearchControl::Continue),
-            KeyCode::Char('c') => match self.mode {
-                SearchMode::Packages => self
+            KeyCode::Char('t') if self.mode == SearchMode::Packages => {
+                let outcome = self
                     .selected_package()
-                    .map(|pkg| {
+                    .map(|pkg| InlineSearchOutcome::TryPackage(package_ref(pkg)));
+                if outcome.is_some() && self.animate {
+                    self.burst.maybe_trigger(KaomojiReaction::SearchReady);
+                }
+                outcome
+                    .map(|outcome| SearchControl::Finish(Some(outcome), WidgetState::Acting))
+                    .unwrap_or(SearchControl::Continue)
+            }
+            KeyCode::Char('c') => match self.mode {
+                SearchMode::Packages => {
+                    let outcome = self.selected_package().map(|pkg| {
                         let label = package_attr_for_config(&package_ref(pkg));
-                        SearchControl::Finish(
-                            Some(InlineSearchOutcome::Copy {
-                                text: label.clone(),
-                                label,
-                            }),
-                            WidgetState::Acting,
-                        )
-                    })
-                    .unwrap_or(SearchControl::Continue),
-                SearchMode::Options => self
-                    .selected_option()
-                    .map(|option| {
-                        SearchControl::Finish(
-                            Some(InlineSearchOutcome::Copy {
-                                label: option.name.clone(),
-                                text: snippet_for(option),
-                            }),
-                            WidgetState::Acting,
-                        )
-                    })
-                    .unwrap_or(SearchControl::Continue),
+                        InlineSearchOutcome::Copy {
+                            text: label.clone(),
+                            label,
+                        }
+                    });
+                    if outcome.is_some() && self.animate {
+                        self.burst.maybe_trigger(KaomojiReaction::Copy);
+                    }
+                    outcome
+                        .map(|outcome| SearchControl::Finish(Some(outcome), WidgetState::Acting))
+                        .unwrap_or(SearchControl::Continue)
+                }
+                SearchMode::Options => {
+                    let outcome = self.selected_option().map(|option| InlineSearchOutcome::Copy {
+                        label: option.name.clone(),
+                        text: snippet_for(option),
+                    });
+                    if outcome.is_some() && self.animate {
+                        self.burst.maybe_trigger(KaomojiReaction::Copy);
+                    }
+                    outcome
+                        .map(|outcome| SearchControl::Finish(Some(outcome), WidgetState::Acting))
+                        .unwrap_or(SearchControl::Continue)
+                }
             },
             KeyCode::Backspace => {
                 self.query.pop();
@@ -294,6 +313,13 @@ impl SearchWidget {
                 } else {
                     WidgetState::Browsing
                 };
+                if self.animate {
+                    self.burst.maybe_trigger(if self.package_results.is_empty() {
+                        KaomojiReaction::SearchEmpty
+                    } else {
+                        KaomojiReaction::SearchReady
+                    });
+                }
             }
             Ok(Ok(SearchBatch::Options(items))) => {
                 self.option_results = items;
@@ -304,18 +330,31 @@ impl SearchWidget {
                 } else {
                     WidgetState::Browsing
                 };
+                if self.animate {
+                    self.burst.maybe_trigger(if self.option_results.is_empty() {
+                        KaomojiReaction::SearchEmpty
+                    } else {
+                        KaomojiReaction::SearchReady
+                    });
+                }
             }
             Ok(Err(err)) => {
                 self.package_results.clear();
                 self.option_results.clear();
                 self.selected = 0;
                 self.state = WidgetState::Error(err.to_string());
+                if self.animate {
+                    self.burst.maybe_trigger(KaomojiReaction::Error);
+                }
             }
             Err(err) => {
                 self.package_results.clear();
                 self.option_results.clear();
                 self.selected = 0;
                 self.state = WidgetState::Error(err.to_string());
+                if self.animate {
+                    self.burst.maybe_trigger(KaomojiReaction::Error);
+                }
             }
         }
     }
@@ -327,9 +366,7 @@ impl SearchWidget {
             result_lines: self.render_result_lines(),
             detail_lines: self.render_detail_lines(),
             hints: self.hints().to_string(),
-            dango: self
-                .show_dango()
-                .then_some(frame_at(self.dango_animation(), self.frame_tick)),
+            kaomoji: self.animate.then_some(self.kaomoji_for_state()),
         }
     }
 
@@ -439,18 +476,14 @@ impl SearchWidget {
         }
     }
 
-    fn dango_animation(&self) -> DangoAnimation {
+    fn kaomoji_for_state(&self) -> &'static str {
         match self.state {
-            WidgetState::Loading => DangoAnimation::Spin,
-            WidgetState::Acting => DangoAnimation::Happy,
-            WidgetState::Exiting => DangoAnimation::Wave,
-            WidgetState::Error(_) => DangoAnimation::Sad,
-            WidgetState::Browsing | WidgetState::Typing => DangoAnimation::Idle,
+            WidgetState::Loading => "( •̀ω•́ )✧",
+            WidgetState::Acting => "(ﾉ◕ヮ◕)ﾉ",
+            WidgetState::Exiting => "( ˘͈ ᵕ ˘͈ )",
+            WidgetState::Error(_) => "(｡•́︿•̀｡)",
+            WidgetState::Browsing | WidgetState::Typing => "(˶ᵔ ᵕ ᵔ˶)",
         }
-    }
-
-    fn show_dango(&self) -> bool {
-        self.animate && self.dango_pos != "off"
     }
 }
 
@@ -604,7 +637,7 @@ mod tests {
 
     #[test]
     fn render_model_uses_query_results_count() {
-        let mut widget = SearchWidget::new(SearchMode::Packages, "rip", true, "auto");
+        let mut widget = SearchWidget::new(SearchMode::Packages, "rip", true);
         widget.package_results = vec![NixPackage {
             attribute: "ripgrep".to_string(),
             ..NixPackage::default()

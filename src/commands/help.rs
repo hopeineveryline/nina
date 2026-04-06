@@ -203,7 +203,7 @@ fn print_command_help(command: &str) {
         "option" => print_help(
             "nina option [query]",
             "Searches NixOS options in an inline browser where you can copy snippets or add them straight to configuration.nix.",
-            "Under the hood: queries the search.nixos.org options backend and renders the same inline ratatui widget used by package search.",
+            "Under the hood: renders the same inline ratatui widget used by package search, but currently points you to search.nixos.org when the remote options index needs auth.",
             &["nina option ollama", "nina option services.tailscale"],
         ),
         "pin" => print_help(
@@ -245,7 +245,7 @@ fn print_command_help(command: &str) {
         "search" => print_help(
             "nina search [query] [--on <machine>]",
             "Opens Nina's inline package browser so you can search, preview, install, try, or copy without leaving the prompt.",
-            "Under the hood: queries search.nixos.org and renders results inside an inline ratatui viewport instead of a fullscreen dashboard.",
+            "Under the hood: runs `nix search` against nixpkgs, falls back when that path is unavailable, and renders results inside an inline ratatui viewport instead of a fullscreen dashboard.",
             &["nina search firefox", "nina search --on server-a"],
         ),
         "service" => print_help(

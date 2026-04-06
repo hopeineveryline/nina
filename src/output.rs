@@ -125,20 +125,30 @@ impl Output {
 
     /// Small framed header for prompt/session moments.
     pub fn hero(&self, title: &str, subtitle: &str) {
+        let content_width = title
+            .chars()
+            .count()
+            .max(subtitle.chars().count())
+            .max(24);
+        let border = format!("╭{}╮", "─".repeat(content_width + 2));
+        let footer = format!("╰{}╯", "─".repeat(content_width + 2));
         println!(
             "  {}",
-            self.paint("╭──────────────────────────────────────╮", BORDER)
+            self.paint(&border, BORDER)
         );
-        println!("  {} {}", self.paint("│", BORDER), self.paint(title, PINK));
         println!(
-            "  {} {}",
+            "  {} {} {}",
             self.paint("│", BORDER),
-            self.paint(subtitle, WARM_WHITE)
+            self.paint(&pad_right(title, content_width), PINK),
+            self.paint("│", BORDER)
         );
         println!(
-            "  {}",
-            self.paint("╰──────────────────────────────────────╯", BORDER)
+            "  {} {} {}",
+            self.paint("│", BORDER),
+            self.paint(&pad_right(subtitle, content_width), WARM_WHITE),
+            self.paint("│", BORDER)
         );
+        println!("  {}", self.paint(&footer, BORDER));
     }
 
     /// Separator line for visual grouping
@@ -246,6 +256,11 @@ impl Output {
             text.to_string()
         }
     }
+}
+
+fn pad_right(text: &str, width: usize) -> String {
+    let pad = width.saturating_sub(text.chars().count());
+    format!("{text}{}", " ".repeat(pad))
 }
 
 /// RGB color triple for terminal output — import with `use crate::output::RgbColor`

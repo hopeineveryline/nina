@@ -12,7 +12,7 @@ pub struct InlineSearchRenderModel {
     pub result_lines: Vec<String>,
     pub detail_lines: Vec<String>,
     pub hints: String,
-    pub dango: Option<&'static str>,
+    pub kaomoji: Option<&'static str>,
 }
 
 pub fn render(frame: &mut Frame<'_>, area: Rect, model: &InlineSearchRenderModel) {
@@ -23,8 +23,8 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, model: &InlineSearchRenderModel
     let inner = block.inner(area);
     frame.render_widget(block, area);
 
-    let dango_width = if model.dango.is_some() { 6 } else { 0 };
-    let main_width = inner.width.saturating_sub(dango_width);
+    let kaomoji_width = if model.kaomoji.is_some() { 14 } else { 0 };
+    let main_width = inner.width.saturating_sub(kaomoji_width);
     let main_area = Rect {
         x: inner.x,
         y: inner.y,
@@ -73,15 +73,16 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, model: &InlineSearchRenderModel
         .style(Style::default().fg(Color::Rgb(190, 178, 209)));
     frame.render_widget(hints, sections[5]);
 
-    if let Some(dango) = model.dango {
-        let dango_area = Rect {
-            x: inner.x + inner.width.saturating_sub(6),
+    if let Some(kaomoji) = model.kaomoji {
+        let kaomoji_area = Rect {
+            x: inner.x + inner.width.saturating_sub(14),
             y: inner.y,
-            width: 6,
-            height: 5,
+            width: 14,
+            height: 3,
         };
-        let widget = Paragraph::new(dango).style(Style::default().fg(Color::Rgb(255, 220, 230)));
-        frame.render_widget(widget, dango_area);
+        let widget =
+            Paragraph::new(kaomoji).style(Style::default().fg(Color::Rgb(255, 220, 230)));
+        frame.render_widget(widget, kaomoji_area);
     }
 }
 

@@ -1,8 +1,5 @@
 use anyhow::Result;
 use clap::Args;
-use std::io::IsTerminal;
-use tokio::time::{sleep, Duration};
-
 use crate::commands::AppContext;
 use crate::machine::Machine;
 
@@ -11,7 +8,7 @@ pub struct HelloArgs {}
 
 pub async fn run(ctx: &AppContext, _args: HelloArgs) -> Result<()> {
     ctx.output.face("hi! i'm nina~");
-    ctx.output.print_muted("i'm your friendly nix helper");
+    ctx.output.print_muted("i'm your calm little nix helper.");
     ctx.output
         .print_muted("i love declarative systems and calm terminal vibes ♡");
     ctx.output.blank();
@@ -27,9 +24,8 @@ pub async fn run(ctx: &AppContext, _args: HelloArgs) -> Result<()> {
         ));
     }
 
-    if ctx.config.animate && std::io::stdout().is_terminal() {
-        let _ = crate::dango::DangoPlayer::play_once(crate::dango::DangoAnimation::Dance, (1, 1));
-        sleep(Duration::from_millis(800)).await;
+    if ctx.config.animate {
+        ctx.output.excited("i brought a few kaomoji with me ♡");
     }
 
     ctx.output.blank();
