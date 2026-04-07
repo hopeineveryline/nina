@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="demo.gif" alt="nina — inline search, install confirmation, and rebuild in one calm terminal session" width="720" />
+<img src="demo.gif" alt="nina — inline search, install confirmation, and rebuild in a warm tan terminal with pink, sage, mint, and gold accents" width="720" />
+
+**[see it in action →](https://nina.asha.software/#demo)** *(warm tan palette, auto-animated demo)*
 
 <br/>
 
