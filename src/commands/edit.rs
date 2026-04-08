@@ -68,7 +68,7 @@ async fn edit_remote(
         ctx.output.success("remote file updated ♡");
     } else {
         ctx.output
-            .face("no changes detected, so i left the remote file alone ♡");
+            .happy("no changes detected, so i left the remote file alone ♡");
     }
 
     let _ = std::fs::remove_file(temp_path);

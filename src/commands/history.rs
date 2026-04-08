@@ -52,11 +52,7 @@ pub async fn run(ctx: &AppContext, args: HistoryArgs) -> Result<()> {
         return Ok(());
     }
 
-    let mut app = HistoryApp::new(
-        machine.name.clone(),
-        generations,
-        ctx.config.animate,
-    );
+    let mut app = HistoryApp::new(machine.name.clone(), generations, ctx.config.animate);
     match app.run().await? {
         Some(HistoryOutcome::Switch(generation)) => {
             crate::commands::go::run(
@@ -92,11 +88,7 @@ struct HistoryApp {
 }
 
 impl HistoryApp {
-    fn new(
-        machine: String,
-        generations: Vec<GenerationEntry>,
-        animate: bool,
-    ) -> Self {
+    fn new(machine: String, generations: Vec<GenerationEntry>, animate: bool) -> Self {
         let selected = generations.iter().position(|row| row.current).unwrap_or(0);
         Self {
             machine,
@@ -241,13 +233,9 @@ impl HistoryApp {
                 width: body[1].width,
                 height: 4,
             };
-            let widget = Paragraph::new(format!(
-                "{}\n{}",
-                self.kaomoji(),
-                self.kaomoji_label()
-            ))
-            .alignment(Alignment::Center)
-            .style(Style::default().fg(Color::Rgb(255, 220, 230)));
+            let widget = Paragraph::new(format!("{}\n{}", self.kaomoji(), self.kaomoji_label()))
+                .alignment(Alignment::Center)
+                .style(Style::default().fg(Color::Rgb(255, 220, 230)));
             frame.render_widget(widget, kaomoji_area);
         }
 

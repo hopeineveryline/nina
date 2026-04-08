@@ -150,10 +150,10 @@ fn bootstrap_wizard() -> Result<NinaConfig> {
         editor,
         generations: default_generations(),
         confirm: default_true(),
-            color: default_true(),
-            teach: default_true(),
-            animate: default_true(),
-            machines: vec![MachineConfig {
+        color: default_true(),
+        teach: default_true(),
+        animate: default_true(),
+        machines: vec![MachineConfig {
             name: machine_name,
             config: config_dir,
             local,

@@ -13,7 +13,7 @@ pub struct TryPkgArgs {
 pub async fn run(ctx: &AppContext, args: TryPkgArgs) -> Result<()> {
     if args.packages.is_empty() {
         ctx.output
-            .face("give me at least one package, like: nina try ripgrep ♡");
+            .happy("give me at least one package, like: nina try ripgrep ♡");
         return Ok(());
     }
 

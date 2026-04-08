@@ -1,7 +1,7 @@
-use anyhow::Result;
-use clap::Args;
 use crate::commands::AppContext;
 use crate::machine::Machine;
+use anyhow::Result;
+use clap::Args;
 
 #[derive(Debug, Clone, Args)]
 pub struct HelloArgs {}

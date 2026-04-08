@@ -15,19 +15,20 @@ pub async fn run(ctx: &AppContext, args: UpdateArgs) -> Result<()> {
     let machine = ctx.machine(&args.on)?;
     ctx.output
         .info(&format!("freshening channels on {}...", machine.name));
-    ctx.output
-        .step("sudo nix-channel --update");
+    ctx.output.step("sudo nix-channel --update");
 
     let result = crate::exec::run(&machine, "sudo nix-channel --update").await?;
     if !result.success() {
-        ctx.output
-            .error(&format!("channel update stumbled: {}", result.stderr.trim()));
+        ctx.output.error(&format!(
+            "channel update stumbled: {}",
+            result.stderr.trim()
+        ));
         return Ok(());
     }
     ctx.output.success("channels are fresh ♡");
 
     // Check for nina updates locally (not on remote machine)
-    if !args.on.is_some() {
+    if args.on.is_none() {
         check_nina_update(ctx).await;
     }
 
@@ -57,13 +58,15 @@ async fn check_nina_update(ctx: &AppContext) {
     ctx.output.blank();
     ctx.output.info(&format!(
         "a newer nina is available: {} (you have {})",
-        latest.tag_name.trim_start_matches('v'), current
+        latest.tag_name.trim_start_matches('v'),
+        current
     ));
 
     if let Some(body) = latest.body.as_ref() {
         let trimmed = body.trim();
         if !trimmed.is_empty() {
-            ctx.output.print(&format!("  what's new:\n{}", indent(trimmed, "    ")));
+            ctx.output
+                .print(&format!("  what's new:\n{}", indent(trimmed, "    ")));
         }
     }
 
@@ -82,16 +85,18 @@ async fn check_nina_update(ctx: &AppContext) {
             Ok(out) if out.status.success() => {
                 let version = String::from_utf8_lossy(&out.stdout).trim().to_string();
                 if !version.is_empty() {
-                    ctx.output
-                        .happy(&format!("nina updated to {} ♡", version.trim_start_matches("nina ")));
+                    ctx.output.happy(&format!(
+                        "nina updated to {} ♡",
+                        version.trim_start_matches("nina ")
+                    ));
                 } else {
                     ctx.output.happy("nina has been updated ♡");
                 }
             }
             _ => {
+                ctx.output.warn("the nix run way didn't work — try:");
                 ctx.output
-                    .warn("the nix run way didn't work — try:");
-                ctx.output.print("  nix profile install github:hopeineveryline/nina");
+                    .print("  nix profile install github:hopeineveryline/nina");
                 ctx.output.print("  nix run github:hopeineveryline/nina");
             }
         }

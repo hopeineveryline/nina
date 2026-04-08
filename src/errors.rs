@@ -11,63 +11,61 @@ impl ErrorMessage {
     pub fn fallback(raw: &str) -> Self {
         Self {
             summary: "something went wrong.".to_string(),
-            detail: format!("nix said:\n{}", indent(raw)),
-            suggestion: "if this looks confusing, try: nina doctor ♡".to_string(),
+            detail: indent(raw),
+            suggestion: String::new(),
         }
     }
 }
 
 pub fn translate_nix_error(raw: &str) -> ErrorMessage {
-    let patterns: [(&str, &str, &str); 8] = [
+    let patterns: [(&str, &str, &str); 7] = [
         (
-            r"undefined variable '([^']+)'",
-            "that package name wasn't found.",
-            "try: nina search <name>",
+            r"undefined variable 'pkgs\.([^']+)'",
+            "'{}' wasn't found in nixpkgs.",
+            "try: nina search {}",
         ),
         (
             r"attribute '([^']+)' missing",
-            "something in your config references a missing attribute.",
-            "double-check package names or search with: nina search <name>",
+            "'{}' doesn't exist in this version of nixpkgs.",
+            "it may have moved or been removed.",
         ),
         (
             r"collision between",
-            "two packages are trying to install the same file.",
-            "remove one of the conflicting packages, then apply again.",
+            "two packages are claiming the same file.",
+            "remove one and try again.",
         ),
         (
             r"infinite recursion",
-            "your config has a circular reference.",
-            "review recent edits around let/in and imports.",
-        ),
-        (
-            r"SSL peer certificate.*was not ok",
-            "there was a network or certificate issue.",
-            "check internet connectivity, then retry.",
+            "there's a circular reference in your config.",
+            "check recent edits to configuration.nix.",
         ),
         (
             r"No space left on device",
-            "your disk is full.",
-            "try: nina clean",
+            "disk is full.",
+            "run: nina clean",
         ),
         (
             r"hash mismatch in fixed-output derivation",
-            "a fetched source checksum did not match.",
-            "this is often temporary, try again in a moment.",
+            "download checksum mismatch — usually temporary.",
+            "try again.",
         ),
         (
-            r"renamed to '([^']+)'",
-            "a package has been renamed.",
-            "update your config to the new package name.",
+            r"cannot write lock file",
+            "can't write flake.lock.",
+            "run with: --no-write-lock-file",
         ),
     ];
 
     for (pattern, summary, suggestion) in patterns {
         if let Ok(re) = Regex::new(pattern) {
-            if re.is_match(raw) {
+            if let Some(caps) = re.captures(raw) {
+                let cap1 = caps.get(1).map_or("".into(), |m| m.as_str().to_string());
+                let summary_out = summary.replace("{}", &cap1);
+                let suggestion_out = suggestion.replace("{}", &cap1);
                 return ErrorMessage {
-                    summary: summary.to_string(),
+                    summary: summary_out,
                     detail: indent(raw),
-                    suggestion: suggestion.to_string(),
+                    suggestion: suggestion_out,
                 };
             }
         }

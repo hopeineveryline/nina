@@ -44,8 +44,7 @@ pub async fn run(ctx: &AppContext, args: DevelopArgs) -> Result<()> {
         }
     }
 
-    ctx.output
-        .tip("type 'exit' to return to your normal shell  ♡");
+    ctx.output.tip("type 'exit' to return to your normal shell");
     ctx.output.blank();
     let command = current_dir_command_for(&machine, "nix develop")?;
     run_attached_machine_command(
@@ -105,7 +104,7 @@ async fn read_dev_shell_packages(machine: &crate::machine::Machine) -> Result<Ve
             crate::commands::shell_quote(expression)
         ),
     )?;
-    let output = crate::exec::run(&machine, &command).await?;
+    let output = crate::exec::run(machine, &command).await?;
     if !output.success() {
         return Ok(Vec::new());
     }

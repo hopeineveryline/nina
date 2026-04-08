@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
-use std::env;
 use serde::de::Deserializer;
 use serde::Deserialize;
 use serde_json::Value;
+use std::env;
 use tokio::task::JoinSet;
 use tokio::time::{timeout, Duration};
 
@@ -259,7 +259,12 @@ fn format_bytes(bytes: u64) -> String {
 async fn query_packages_with_nix_search(query: &str) -> Result<Vec<NixPackage>> {
     let nixpkgs_ref = env::var("NINA_NIXPKGS").unwrap_or_else(|_| "nixpkgs".to_string());
     let attempts = [
-        vec!["search".to_string(), nixpkgs_ref.clone(), query.to_string(), "--json".to_string()],
+        vec![
+            "search".to_string(),
+            nixpkgs_ref.clone(),
+            query.to_string(),
+            "--json".to_string(),
+        ],
         vec![
             "--extra-experimental-features".to_string(),
             "nix-command flakes".to_string(),
@@ -289,12 +294,20 @@ async fn query_packages_with_nix_search(query: &str) -> Result<Vec<NixPackage>> 
 }
 
 async fn query_packages_with_nix_env(query: &str) -> Result<Vec<NixPackage>> {
-    let args = vec!["-qaP".to_string(), "--json".to_string(), format!("*{query}*")];
+    let args = vec![
+        "-qaP".to_string(),
+        "--json".to_string(),
+        format!("*{query}*"),
+    ];
     let output = run_command_with_timeout("nix-env", &args, "running nix-env search").await?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("nix-env search exited with {}: {}", output.status, stderr.trim());
+        anyhow::bail!(
+            "nix-env search exited with {}: {}",
+            output.status,
+            stderr.trim()
+        );
     }
 
     let raw = String::from_utf8_lossy(&output.stdout);
@@ -303,7 +316,11 @@ async fn query_packages_with_nix_env(query: &str) -> Result<Vec<NixPackage>> {
     Ok(packages_from_value(&parsed))
 }
 
-async fn run_command_with_timeout(program: &str, args: &[String], activity: &str) -> Result<std::process::Output> {
+async fn run_command_with_timeout(
+    program: &str,
+    args: &[String],
+    activity: &str,
+) -> Result<std::process::Output> {
     timeout(
         Duration::from_secs(PACKAGE_QUERY_TIMEOUT_SECS),
         tokio::process::Command::new(program)
@@ -352,7 +369,13 @@ fn package_from_value(attr: &str, value: &Value) -> NixPackage {
         size: string_field(
             value,
             meta,
-            &["size", "downloadSize", "download-size", "installedSize", "installed-size"],
+            &[
+                "size",
+                "downloadSize",
+                "download-size",
+                "installedSize",
+                "installed-size",
+            ],
         ),
     }
 }
@@ -430,10 +453,16 @@ mod tests {
         let pkg = package_from_value("ripgrep", &value);
         assert_eq!(pkg.attribute, "ripgrep");
         assert_eq!(pkg.name, "ripgrep-14.1.0");
-        assert_eq!(pkg.homepage.as_deref(), Some("https://github.com/BurntSushi/ripgrep"));
+        assert_eq!(
+            pkg.homepage.as_deref(),
+            Some("https://github.com/BurntSushi/ripgrep")
+        );
         assert_eq!(pkg.license.as_deref(), Some("MIT"));
         assert_eq!(pkg.platforms, vec!["x86_64-linux", "aarch64-linux"]);
-        assert_eq!(pkg.long_description.as_deref(), Some("longer package summary"));
+        assert_eq!(
+            pkg.long_description.as_deref(),
+            Some("longer package summary")
+        );
     }
 
     #[tokio::test]
@@ -456,7 +485,10 @@ mod tests {
         );
 
         let exact = resolve_exact_package("ripgrep").await?;
-        assert!(exact.is_some(), "expected an exact ripgrep package resolution");
+        assert!(
+            exact.is_some(),
+            "expected an exact ripgrep package resolution"
+        );
         assert_eq!(exact.unwrap().exact.attribute, "ripgrep");
         Ok(())
     }

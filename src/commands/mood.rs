@@ -27,6 +27,7 @@ pub async fn run(ctx: &AppContext, _args: MoodArgs) -> Result<()> {
     }
     rows.sort_by(|a, b| a.machine.cmp(&b.machine));
 
+    let all_ok = rows.iter().all(|r| r.ok);
     let vibes = rows
         .into_iter()
         .map(|row| {
@@ -41,6 +42,10 @@ pub async fn run(ctx: &AppContext, _args: MoodArgs) -> Result<()> {
         })
         .collect::<Vec<_>>();
 
-    ctx.output.cozy(&format!("{}~", vibes.join(" · ")));
+    if all_ok {
+        ctx.output.cozy(&format!("{}~ 🍡", vibes.join(" · ")));
+    } else {
+        ctx.output.cozy(&format!("{}~", vibes.join(" · ")));
+    }
     Ok(())
 }

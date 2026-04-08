@@ -1,6 +1,6 @@
 [package]
 name = "nina"
-version = "0.4.8"
+version = "0.4.9"
 edition = "2021"
 description = "Friendly Rust CLI/TUI for NixOS management"
 license = "MIT"

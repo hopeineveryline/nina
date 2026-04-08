@@ -185,8 +185,8 @@ fn frames_for(reaction: KaomojiReaction) -> &'static [&'static str] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::time::{Duration, Instant};
     use ratatui::layout::Rect;
+    use std::time::{Duration, Instant};
 
     macro_rules! reaction_contract_tests {
         ($($name:ident => { reaction: $reaction:expr, cooldown_ms: $cooldown_ms:expr, first: $first:literal, second: $second:literal, third: $third:literal $(,)? },)+) => {

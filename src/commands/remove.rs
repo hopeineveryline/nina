@@ -32,7 +32,7 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
                 "write this change to configuration.nix?",
             )? {
                 ctx.output
-                    .warn("okay, cancelled before editing your config ♡");
+                    .happy("okay, cancelled before editing your config ♡");
                 return Ok(());
             }
             let backup = crate::editor::backup(path)?;
@@ -42,13 +42,13 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
 
             if args.no_apply {
                 ctx.output
-                    .face("okay, removed from config and skipped rebuild ♡");
+                    .happy("okay, removed from config and skipped rebuild ♡");
                 return Ok(());
             }
 
             if !confirm_action(ctx.config.confirm, "apply now?")? {
                 ctx.output
-                    .face("okay, the file is updated. you can run 'nina apply' later ♡");
+                    .happy("okay, the file is updated. you can run 'nina apply' later ♡");
                 return Ok(());
             }
 
@@ -56,15 +56,8 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
                 "sudo nixos-rebuild switch -I nixos-config={}/configuration.nix",
                 machine.config_dir
             );
-            if let Err(err) = run_machine_command(
-                ctx,
-                &args.on,
-                "patching it in",
-                &cmd,
-                "remove",
-                true,
-            )
-            .await
+            if let Err(err) =
+                run_machine_command(ctx, &args.on, "patching it in", &cmd, "remove", true).await
             {
                 ctx.output
                     .error("the rebuild stumbled — i can restore from backup if you like");
@@ -93,7 +86,7 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
             "write this change to the remote configuration?",
         )? {
             ctx.output
-                .warn("okay, cancelled before editing your remote config ♡");
+                .happy("okay, cancelled before editing your remote config ♡");
             return Ok(());
         }
         let backup_path = format!("{}.nina-backup", config_path);
@@ -107,17 +100,17 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
         )
         .await?;
         crate::commands::edit::upload_remote_file(&machine, &config_path, &preview.updated).await?;
-        ctx.output.success("remote configuration updated ♡");
+        ctx.output.success("remote configuration updated");
 
         if args.no_apply {
             ctx.output
-                .face("okay, removed from config and skipped rebuild ♡");
+                .happy("okay, removed from config and skipped rebuild ♡");
             return Ok(());
         }
 
         if !confirm_action(ctx.config.confirm, "apply now?")? {
             ctx.output
-                .face("okay, the remote file is updated. you can run 'nina apply' later ♡");
+                .happy("okay, the remote file is updated. you can run 'nina apply' later ♡");
             return Ok(());
         }
 
@@ -125,15 +118,8 @@ pub async fn run(ctx: &AppContext, args: RemoveArgs) -> Result<()> {
             "sudo nixos-rebuild switch -I nixos-config={}/configuration.nix",
             machine.config_dir
         );
-        if let Err(err) = run_machine_command(
-            ctx,
-            &args.on,
-            "patching it in",
-            &cmd,
-            "remove",
-            true,
-        )
-        .await
+        if let Err(err) =
+            run_machine_command(ctx, &args.on, "patching it in", &cmd, "remove", true).await
         {
             ctx.output
                 .error("the rebuild stumbled on the remote machine — i can restore from backup if you like");

@@ -32,9 +32,9 @@ impl Output {
         println!("{} {}", self.symbol("✦", PINK), message);
     }
 
-    /// Positive outcome — mint ✓
+    /// Positive outcome — mint, no symbol prefix
     pub fn success(&self, message: &str) {
-        println!("{} {}", self.symbol("✓", MINT), message);
+        println!("{}", self.paint(message, MINT));
     }
 
     /// Warning or attention — gold ⚠
@@ -59,7 +59,7 @@ impl Output {
 
     // ─── kaomoji reactions ─────────────────────────────────────────────────
 
-    /// Warm nina greeting (˶ᵔ ᵕ ᵔ˶)
+    /// Warm nina greeting (˶ᵔ ᵕ ᵔ˶) — use only in hello, mood, and the setup wizard.
     pub fn face(&self, message: &str) {
         self.kao(Kaomoji::Nina, message);
     }
@@ -114,6 +114,7 @@ impl Output {
         println!("  {}  {}", self.dim(label), self.paint(value, GOLD));
     }
 
+    #[allow(dead_code)]
     pub fn kv_err(&self, label: &str, value: &str) {
         println!("  {}  {}", self.dim(label), self.paint(value, ROSE));
     }
@@ -125,17 +126,10 @@ impl Output {
 
     /// Small framed header for prompt/session moments.
     pub fn hero(&self, title: &str, subtitle: &str) {
-        let content_width = title
-            .chars()
-            .count()
-            .max(subtitle.chars().count())
-            .max(24);
+        let content_width = title.chars().count().max(subtitle.chars().count()).max(24);
         let border = format!("╭{}╮", "─".repeat(content_width + 2));
         let footer = format!("╰{}╯", "─".repeat(content_width + 2));
-        println!(
-            "  {}",
-            self.paint(&border, BORDER)
-        );
+        println!("  {}", self.paint(&border, BORDER));
         println!(
             "  {} {} {}",
             self.paint("│", BORDER),
@@ -216,7 +210,12 @@ impl Output {
 
     pub fn teach_command(&self, command: &str) {
         if self.teach {
-            println!("  ╌ {}", self.dim(&format!("ran: {command}")));
+            let shape = command
+                .split_whitespace()
+                .take(2)
+                .collect::<Vec<_>>()
+                .join(" ");
+            println!("  ╌ {}", self.dim(&shape));
         }
     }
 

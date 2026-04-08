@@ -44,25 +44,25 @@ pub async fn run(ctx: &AppContext, args: InfoArgs) -> Result<()> {
     ctx.output.blank();
     ctx.output.kv(
         "nixos version",
-        &info.get("NIXOS_VERSION").context("missing nixos version")?,
+        info.get("NIXOS_VERSION").context("missing nixos version")?,
     );
     ctx.output
-        .kv("kernel", &info.get("KERNEL").context("missing kernel")?);
+        .kv("kernel", info.get("KERNEL").context("missing kernel")?);
     ctx.output.kv(
         "state version",
         info.get("STATE_VERSION").unwrap_or(&"unknown".to_string()),
     );
     ctx.output.kv(
         "architecture",
-        &info.get("ARCH").context("missing architecture")?,
+        info.get("ARCH").context("missing architecture")?,
     );
     ctx.output
-        .kv("hostname", &info.get("HOST").context("missing hostname")?);
+        .kv("hostname", info.get("HOST").context("missing hostname")?);
     ctx.output
-        .kv("uptime", &info.get("UPTIME").context("missing uptime")?);
+        .kv("uptime", info.get("UPTIME").context("missing uptime")?);
     ctx.output.kv(
         "nix version",
-        &info.get("NIX_VERSION").context("missing nix version")?,
+        info.get("NIX_VERSION").context("missing nix version")?,
     );
     Ok(())
 }

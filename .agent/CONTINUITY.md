@@ -4,6 +4,7 @@
 - 2026-04-03T14:05Z [USER] Implement the missing Kiln macOS/QEMU path first so Nina is tested inside a downloaded NixOS VM instead of on the macOS host.
 - 2026-04-03T16:51Z [USER] Expand Nina to 500 full-scope tests, keep the Kiln VM path running automatically once ready, and check feel/response/consistency/grammar rather than parser coverage alone.
 - 2026-04-06T04:42Z [USER] Remove dango from Nina in favor of kaomoji, calm down the phrasing, fix the duplicated headline and undersized hero box, refresh the repo demo, and verify the broken `search` / `install` package lookup path in a real Kiln NixOS guest.
+- 2026-04-07T00:00Z [USER] Implement full polish guide: controlled warmth rules, command-by-command output rewrites, error message hardening, hardcoded name audit, and confirmation prompt polish.
 
 [DECISIONS]
 - 2026-04-02T23:55Z [CODE] Kept existing command modules intact and wrapped them with a new `src/session.rs` orchestration layer to avoid duplicating presentation logic across every command file.
@@ -20,6 +21,11 @@
 - 2026-04-06T04:42Z [CODE] Bumped Nina through `0.4.2`, `0.4.3`, `0.4.4`, and finally `0.4.5` as the kaomoji/tone cleanup, package search hardening, guest smoke test, and timeout fix landed.
 - 2026-04-06T05:00Z [USER] Remove the macOS GitHub Actions release path entirely and keep Nina releases source-only.
 - 2026-04-06T05:00Z [CODE] Deleted `.github/workflows/release.yml`, bumped Nina to `0.4.7`, and kept the release process centered on checked-in source plus Kiln/Nix verification rather than packaged macOS artifacts.
+- 2026-04-06T05:55Z [USER] GitHub or Gitea releases should be committed, tagged, pushed, and released automatically at the end of the change.
+- 2026-04-06T14:37Z [TOOL] Verified `AGENTS.md` was already listed in `.gitignore`, so no ignore-rule change was needed.
+- 2026-04-06T14:38Z [TOOL] Published the missing GitHub release for tag `v0.4.6` with `--latest=false`, so GitHub now shows `v0.4.7` as Latest and `v0.4.6` immediately before it.
+- 2026-04-06T14:42Z [USER] Release notes should sound warm, natural, and like Nina rather than a bland robot-generated changelog.
+- 2026-04-06T14:45Z [USER] Nina's website was still showing an old release snapshot and needed to reflect the latest GitHub release.
 
 [PROGRESS]
 - 2026-04-02T23:55Z [TOOL] `.agent/CONTINUITY.md` was absent at task start; created it to satisfy workspace continuity requirements before further state drift.
@@ -50,6 +56,11 @@
 - 2026-04-06T05:00Z [TOOL] The interactive `search` path needs a real pty plus a writable config scaffold, while `install` can be exercised deterministically with an `expect` session that answers the package picker and confirmation prompts.
 - 2026-04-06T05:00Z [TOOL] `scripts/kiln-interactive-regression.sh` passed end-to-end in a real Kiln NixOS guest, confirming the checked-in wrapper matches the previously proven temp harness.
 - 2026-04-06T05:00Z [TOOL] No GitHub Actions workflow remains for Nina releases after deleting the macOS artifact workflow; release automation is now source-only.
+- 2026-04-06T05:55Z [CODE] Added a repo instruction in `AGENTS.md` requiring GitHub or Gitea releases to be committed, tagged, pushed, and created automatically at the end of a change.
+- 2026-04-06T14:37Z [TOOL] Published the missing GitHub release for tag `v0.4.7`; GitHub now shows `v0.4.7` as Latest and still retains the older `v0.4.0` release.
+- 2026-04-06T14:38Z [TOOL] GitHub release history now includes both `v0.4.6` and `v0.4.7`, matching the local tag set while preserving `v0.4.7` as the latest release.
+- 2026-04-06T14:42Z [CODE] Added `scripts/release.sh` as a reusable release helper that edits or creates GitHub releases with warm Nina-style notes.
+- 2026-04-06T14:45Z [TOOL] Deployed the website with Vercel so the live homepage now renders `0.4.8` from GitHub releases.
 
 [OUTCOMES]
 - 2026-04-03T00:08Z [CODE] Nina now has an interactive no-arg prompt, livelier one-shot command envelopes, 150 Rust tests, and repo-local Kiln/Nix harness files. Remaining blocker: VM smoke execution needs a host with working `nix`.
@@ -59,3 +70,10 @@
 - 2026-04-06T05:00Z [CODE] Nina v0.4.6 now includes a checked-in interactive Kiln regression wrapper for the real `search` and `install` flows, and the wrapper plus local Rust verification and a release `cargo build --release` all completed successfully.
 - 2026-04-06T05:00Z [CODE] Nina v0.4.7 removes the macOS GitHub Actions release path and keeps releases to source code plus local/Kiln verification.
 - 2026-04-06T05:00Z [CODE] The interactive guest session for `nina search ripgrep` and `nina install ripgrep --no-apply` passed under Kiln, confirming the pty-driven TUI flow now completes against a temporary guest config instead of hanging on package lookup or terminal handling.
+- 2026-04-06T05:55Z [CODE] Repository guidance now explicitly requires end-of-change GitHub or Gitea releases to be committed, tagged, pushed, and released automatically.
+- 2026-04-06T14:37Z [CODE] GitHub release metadata now matches the repo tag state: `v0.4.7` is published and marked Latest, so external consumers should stop reading `0.4.0` from the release page once caches refresh.
+- 2026-04-06T14:38Z [CODE] GitHub now lists the missing `v0.4.6` release before `v0.4.7`, so the release history reflects the major fix-heavy cut without changing the latest release pointer.
+- 2026-04-06T14:42Z [CODE] Rewrote the public GitHub release bodies for `v0.4.6`, `v0.4.7`, and `v0.4.8` into warmer, more natural copy.
+- 2026-04-06T14:42Z [CODE] Published `v0.4.8` from the new helper after bumping the crate version, so the current release matches the committed source and the helper is now exercised in the real release path.
+- 2026-04-06T14:45Z [CODE] The website now reflects Nina release `0.4.8` again after a fresh Vercel production deploy of `../ninawebsite`.
+- 2026-04-07T00:00Z [CODE] Nina v0.4.9 implements the full polish guide: controlled warmth (one heart per command max), removed ✓ from success(), stripped face() from all non-hello/mood commands, tightened session descriptors (removed followup tips, rewrote pulse strings), updated error translation table with X placeholders, added 🍡 to mood when all machines healthy, simplified status table, rewrote doctor phrase. Hardcoded machine names audit: no kyoshi/azula found in src/. Pre-existing clippy warnings (large_size_difference enum variants) remain unfixed.

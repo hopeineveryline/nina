@@ -37,7 +37,7 @@ pub async fn run(ctx: &AppContext, args: ListArgs) -> Result<()> {
 
     if packages.is_empty() {
         ctx.output
-            .face("no packages found in environment.systemPackages yet.");
+            .happy("no packages found in environment.systemPackages yet.");
         return Ok(());
     }
 

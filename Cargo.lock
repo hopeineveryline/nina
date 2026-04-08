@@ -1569,7 +1569,7 @@ dependencies = [
 
 [[package]]
 name = "nina"
-version = "0.4.8"
+version = "0.4.9"
 dependencies = [
  "anyhow",
  "arboard",

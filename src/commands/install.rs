@@ -26,7 +26,7 @@ pub async fn run(ctx: &AppContext, args: InstallArgs) -> Result<()> {
     let resolution = match resolve_install_selection(&args.package, &machine.name).await? {
         InstallSelectionState::Resolved(resolution) => resolution,
         InstallSelectionState::Cancelled => {
-            ctx.output.warn("okay, no package picked ♡");
+            ctx.output.happy("okay, no package picked ♡");
             return Ok(());
         }
         InstallSelectionState::Unresolved => {
@@ -89,7 +89,7 @@ pub async fn run(ctx: &AppContext, args: InstallArgs) -> Result<()> {
                 "write this change to configuration.nix?",
             )? {
                 ctx.output
-                    .warn("okay, cancelled before editing your config ♡");
+                    .happy("okay, cancelled before editing your config ♡");
                 return Ok(());
             }
             let backup = crate::editor::backup(path)?;
@@ -99,13 +99,13 @@ pub async fn run(ctx: &AppContext, args: InstallArgs) -> Result<()> {
 
             if args.no_apply {
                 ctx.output
-                    .face("all set, i skipped rebuild because --no-apply was set ♡");
+                    .happy("all set, i skipped rebuild because --no-apply was set ♡");
                 return Ok(());
             }
 
             if !confirm_action(ctx.config.confirm, "apply now?")? {
                 ctx.output
-                    .face("okay, the file is updated. you can run 'nina apply' later ♡");
+                    .happy("okay, the file is updated. you can run 'nina apply' later ♡");
                 return Ok(());
             }
 
@@ -113,15 +113,8 @@ pub async fn run(ctx: &AppContext, args: InstallArgs) -> Result<()> {
                 "sudo nixos-rebuild switch -I nixos-config={}/configuration.nix",
                 machine.config_dir
             );
-            if let Err(err) = run_machine_command(
-                ctx,
-                &args.on,
-                "patching it in",
-                &cmd,
-                "install",
-                true,
-            )
-            .await
+            if let Err(err) =
+                run_machine_command(ctx, &args.on, "patching it in", &cmd, "install", true).await
             {
                 ctx.output
                     .error("the rebuild stumbled — i can restore from backup if you like");
@@ -150,7 +143,7 @@ pub async fn run(ctx: &AppContext, args: InstallArgs) -> Result<()> {
             "write this change to the remote configuration?",
         )? {
             ctx.output
-                .warn("okay, cancelled before editing your remote config ♡");
+                .happy("okay, cancelled before editing your remote config ♡");
             return Ok(());
         }
         let backup_path = format!("{}.nina-backup", config_path);
@@ -164,17 +157,17 @@ pub async fn run(ctx: &AppContext, args: InstallArgs) -> Result<()> {
         )
         .await?;
         crate::commands::edit::upload_remote_file(&machine, &config_path, &preview.updated).await?;
-        ctx.output.success("remote configuration updated ♡");
+        ctx.output.success("remote configuration updated");
 
         if args.no_apply {
             ctx.output
-                .face("all set, i skipped rebuild because --no-apply was set ♡");
+                .happy("all set, i skipped rebuild because --no-apply was set ♡");
             return Ok(());
         }
 
         if !confirm_action(ctx.config.confirm, "apply now?")? {
             ctx.output
-                .face("okay, the remote file is updated. you can run 'nina apply' later ♡");
+                .happy("okay, the remote file is updated. you can run 'nina apply' later ♡");
             return Ok(());
         }
 
@@ -182,15 +175,8 @@ pub async fn run(ctx: &AppContext, args: InstallArgs) -> Result<()> {
             "sudo nixos-rebuild switch -I nixos-config={}/configuration.nix",
             machine.config_dir
         );
-        if let Err(err) = run_machine_command(
-            ctx,
-            &args.on,
-            "patching it in",
-            &cmd,
-            "install",
-            true,
-        )
-        .await
+        if let Err(err) =
+            run_machine_command(ctx, &args.on, "patching it in", &cmd, "install", true).await
         {
             ctx.output
                 .error("the rebuild stumbled on the remote machine — i can restore from backup if you like");

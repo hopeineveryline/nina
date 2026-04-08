@@ -80,8 +80,7 @@ pub fn render(frame: &mut Frame<'_>, area: Rect, model: &InlineSearchRenderModel
             width: 14,
             height: 3,
         };
-        let widget =
-            Paragraph::new(kaomoji).style(Style::default().fg(Color::Rgb(255, 220, 230)));
+        let widget = Paragraph::new(kaomoji).style(Style::default().fg(Color::Rgb(255, 220, 230)));
         frame.render_widget(widget, kaomoji_area);
     }
 }

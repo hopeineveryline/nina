@@ -22,6 +22,6 @@ pub async fn run(ctx: &AppContext, args: CurrentArgs) -> Result<()> {
             output.stderr.trim()
         );
     }
-    ctx.output.print(&output.stdout.trim());
+    ctx.output.print(output.stdout.trim());
     Ok(())
 }

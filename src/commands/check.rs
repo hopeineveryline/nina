@@ -15,5 +15,13 @@ pub async fn run(ctx: &AppContext, args: CheckArgs) -> Result<()> {
         "sudo nixos-rebuild build -I nixos-config={}/configuration.nix",
         machine.config_dir
     );
-    run_machine_command(ctx, &args.on, "taking a look at your config", &cmd, "check", false).await
+    run_machine_command(
+        ctx,
+        &args.on,
+        "taking a look at your config",
+        &cmd,
+        "check",
+        false,
+    )
+    .await
 }

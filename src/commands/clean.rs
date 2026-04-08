@@ -41,7 +41,7 @@ pub async fn run(ctx: &AppContext, args: CleanArgs) -> Result<()> {
     }
 
     if !confirm_action(ctx.config.confirm, "continue with cleanup?")? {
-        ctx.output.warn("okay, cancelled with no cleanup ♡");
+        ctx.output.happy("okay, cancelled with no cleanup ♡");
         return Ok(());
     }
 
@@ -61,7 +61,7 @@ pub async fn run(ctx: &AppContext, args: CleanArgs) -> Result<()> {
 
     let after = collect_cleanup_stats(&machine).await?;
     let freed = before.store_bytes.saturating_sub(after.store_bytes);
-    ctx.output.success("cleanup done ♡");
+    ctx.output.success("cleanup done");
     ctx.output.step(&format!(
         "removed {} generation(s), leaving {} generation(s), and freed about {} bytes.",
         before

@@ -35,5 +35,13 @@ pub async fn run(ctx: &AppContext, args: UpgradeArgs) -> Result<()> {
         )
     };
 
-    run_machine_command(ctx, &args.on, "upgrading your system", &cmd, "upgrade", true).await
+    run_machine_command(
+        ctx,
+        &args.on,
+        "upgrading your system",
+        &cmd,
+        "upgrade",
+        true,
+    )
+    .await
 }

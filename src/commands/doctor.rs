@@ -220,10 +220,10 @@ fn render_report(ctx: &AppContext, report: &DoctorReport) {
 
     if warnings == 0 {
         ctx.output
-            .face("nothing scary here, just keeping an eye on things ♡");
+            .happy("nothing scary here, just keeping an eye on things ♡");
     } else {
-        ctx.output.face(&format!(
-            "{} thing{} to look at, but nothing is beyond repair ♡",
+        ctx.output.happy(&format!(
+            "nothing broken, {} thing{} to tidy ♡",
             warnings,
             if warnings == 1 { "" } else { "s" }
         ));

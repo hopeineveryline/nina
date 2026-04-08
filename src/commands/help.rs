@@ -16,44 +16,76 @@ pub async fn run(ctx: &AppContext, args: HelpArgs) -> Result<()> {
 
     ctx.output.face("nina command guide ♡");
     ctx.output.print_plain("  apply     rebuild + switch");
-    ctx.output.print_plain("  back      rollback one generation");
-    ctx.output.print_plain("  boot      list bootloader entries");
-    ctx.output.print_plain("  build     build the current flake or attr");
+    ctx.output
+        .print_plain("  back      rollback one generation");
+    ctx.output
+        .print_plain("  boot      list bootloader entries");
+    ctx.output
+        .print_plain("  build     build the current flake or attr");
     ctx.output.print_plain("  channel   manage nix channels");
-    ctx.output.print_plain("  clean     prune old generations + garbage collect");
-    ctx.output.print_plain("  develop   enter the current dev shell");
+    ctx.output
+        .print_plain("  clean     prune old generations + garbage collect");
+    ctx.output
+        .print_plain("  develop   enter the current dev shell");
     ctx.output.print_plain("  diff      compare generations");
     ctx.output.print_plain("  doctor    run diagnostics");
-    ctx.output.print_plain("  edit      edit configuration.nix or hardware config");
-    ctx.output.print_plain("  fetch     prefetch a URL and copy its hash");
-    ctx.output.print_plain("  flake     init, update, check, show, or lock a flake");
-    ctx.output.print_plain("  fmt       format configuration.nix safely");
-    ctx.output.print_plain("  gen       quick generation helpers");
-    ctx.output.print_plain("  go <n>    switch to a specific generation");
-    ctx.output.print_plain("  hash      compute a nix hash for a local path");
+    ctx.output
+        .print_plain("  edit      edit configuration.nix or hardware config");
+    ctx.output
+        .print_plain("  fetch     prefetch a URL and copy its hash");
+    ctx.output
+        .print_plain("  flake     init, update, check, show, or lock a flake");
+    ctx.output
+        .print_plain("  fmt       format configuration.nix safely");
+    ctx.output
+        .print_plain("  gen       quick generation helpers");
+    ctx.output
+        .print_plain("  go <n>    switch to a specific generation");
+    ctx.output
+        .print_plain("  hash      compute a nix hash for a local path");
     ctx.output.print_plain("  hello     meet nina");
-    ctx.output.print_plain("  history   browse generations interactively");
-    ctx.output.print_plain("  info      system version + uptime info");
-    ctx.output.print_plain("  install   add a package to configuration.nix");
-    ctx.output.print_plain("  list      list configured system packages");
-    ctx.output.print_plain("  log       show ~/.nina.log history");
-    ctx.output.print_plain("  mood      friendly status summary");
-    ctx.output.print_plain("  option    search nixos options inline + add snippets");
-    ctx.output.print_plain("  pin       pin a flake input to a commit");
-    ctx.output.print_plain("  pkg       inspect package deps, path, and closure");
-    ctx.output.print_plain("  profile   manage user profile packages");
-    ctx.output.print_plain("  remove    remove a package from configuration.nix");
-    ctx.output.print_plain("  repl      open nix repl with nixpkgs loaded");
-    ctx.output.print_plain("  run       run a flake app or nixpkgs package");
-    ctx.output.print_plain("  search    search nixpkgs inline from the prompt");
-    ctx.output.print_plain("  service   manage systemd services");
-    ctx.output.print_plain("  status    health + generation summary");
-    ctx.output.print_plain("  store     inspect and maintain /nix/store");
-    ctx.output.print_plain("  try       open a temporary nix shell");
-    ctx.output.print_plain("  unpin     clear a temporary flake pin");
+    ctx.output
+        .print_plain("  history   browse generations interactively");
+    ctx.output
+        .print_plain("  info      system version + uptime info");
+    ctx.output
+        .print_plain("  install   add a package to configuration.nix");
+    ctx.output
+        .print_plain("  list      list configured system packages");
+    ctx.output
+        .print_plain("  log       show ~/.nina.log history");
+    ctx.output
+        .print_plain("  mood      friendly status summary");
+    ctx.output
+        .print_plain("  option    search nixos options inline + add snippets");
+    ctx.output
+        .print_plain("  pin       pin a flake input to a commit");
+    ctx.output
+        .print_plain("  pkg       inspect package deps, path, and closure");
+    ctx.output
+        .print_plain("  profile   manage user profile packages");
+    ctx.output
+        .print_plain("  remove    remove a package from configuration.nix");
+    ctx.output
+        .print_plain("  repl      open nix repl with nixpkgs loaded");
+    ctx.output
+        .print_plain("  run       run a flake app or nixpkgs package");
+    ctx.output
+        .print_plain("  search    search nixpkgs inline from the prompt");
+    ctx.output
+        .print_plain("  service   manage systemd services");
+    ctx.output
+        .print_plain("  status    health + generation summary");
+    ctx.output
+        .print_plain("  store     inspect and maintain /nix/store");
+    ctx.output
+        .print_plain("  try       open a temporary nix shell");
+    ctx.output
+        .print_plain("  unpin     clear a temporary flake pin");
     ctx.output.print_plain("  update    refresh nix channels");
     ctx.output.print_plain("  upgrade   update + apply");
-    ctx.output.print_plain("  help      explain a command in plain language");
+    ctx.output
+        .print_plain("  help      explain a command in plain language");
     ctx.output.blank();
     ctx.output
         .tip("use: nina help <command> for flags, examples, and what nina does under the hood.");

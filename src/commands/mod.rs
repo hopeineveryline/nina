@@ -80,10 +80,10 @@ pub async fn run_machine_command(
     maybe_warn_about_dev_shell(ctx, &machine, command_name, command_line);
     ctx.output
         .info(&format!("{} on {}...", start_message, machine.name));
-    ctx.output.step(&format!("{}", command_line));
+    ctx.output.step(command_line);
 
     if destructive && !confirm_if_needed(ctx)? {
-        ctx.output.warn("okay, cancelled with no changes ♡");
+        ctx.output.happy("okay, cancelled with no changes ♡");
         return Ok(());
     }
 
@@ -168,7 +168,7 @@ pub async fn run_attached_machine_command(
     ctx.output.step(command_line);
 
     if destructive && !confirm_if_needed(ctx)? {
-        ctx.output.warn("okay, cancelled with no changes ♡");
+        ctx.output.happy("okay, cancelled with no changes ♡");
         return Ok(());
     }
 

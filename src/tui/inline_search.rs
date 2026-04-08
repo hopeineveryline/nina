@@ -75,11 +75,7 @@ enum SearchControl {
 }
 
 impl SearchWidget {
-    pub fn new(
-        mode: SearchMode,
-        initial_query: impl Into<String>,
-        animate: bool,
-    ) -> Self {
+    pub fn new(mode: SearchMode, initial_query: impl Into<String>, animate: bool) -> Self {
         let query = initial_query.into();
         let mut widget = Self {
             mode,
@@ -191,10 +187,12 @@ impl SearchWidget {
                         .unwrap_or(SearchControl::Continue)
                 }
                 SearchMode::Options => {
-                    let outcome = self.selected_option().map(|option| InlineSearchOutcome::AddOption {
-                        option_name: option.name.clone(),
-                        snippet: snippet_for(option),
-                    });
+                    let outcome =
+                        self.selected_option()
+                            .map(|option| InlineSearchOutcome::AddOption {
+                                option_name: option.name.clone(),
+                                snippet: snippet_for(option),
+                            });
                     if outcome.is_some() && self.animate {
                         self.burst.maybe_trigger(KaomojiReaction::DetailPeek);
                     }
@@ -231,10 +229,12 @@ impl SearchWidget {
                         .unwrap_or(SearchControl::Continue)
                 }
                 SearchMode::Options => {
-                    let outcome = self.selected_option().map(|option| InlineSearchOutcome::Copy {
-                        label: option.name.clone(),
-                        text: snippet_for(option),
-                    });
+                    let outcome = self
+                        .selected_option()
+                        .map(|option| InlineSearchOutcome::Copy {
+                            label: option.name.clone(),
+                            text: snippet_for(option),
+                        });
                     if outcome.is_some() && self.animate {
                         self.burst.maybe_trigger(KaomojiReaction::Copy);
                     }
@@ -314,11 +314,12 @@ impl SearchWidget {
                     WidgetState::Browsing
                 };
                 if self.animate {
-                    self.burst.maybe_trigger(if self.package_results.is_empty() {
-                        KaomojiReaction::SearchEmpty
-                    } else {
-                        KaomojiReaction::SearchReady
-                    });
+                    self.burst
+                        .maybe_trigger(if self.package_results.is_empty() {
+                            KaomojiReaction::SearchEmpty
+                        } else {
+                            KaomojiReaction::SearchReady
+                        });
                 }
             }
             Ok(Ok(SearchBatch::Options(items))) => {
@@ -383,7 +384,7 @@ impl SearchWidget {
             _ => {
                 let rows = match self.mode {
                     SearchMode::Packages => visible_slice(&self.package_results, self.selected)
-                        .into_iter()
+                        .iter()
                         .enumerate()
                         .map(|(offset, pkg)| {
                             let absolute =
@@ -402,7 +403,7 @@ impl SearchWidget {
                         })
                         .collect::<Vec<_>>(),
                     SearchMode::Options => visible_slice(&self.option_results, self.selected)
-                        .into_iter()
+                        .iter()
                         .enumerate()
                         .map(|(offset, option)| {
                             let absolute =

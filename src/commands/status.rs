@@ -4,7 +4,6 @@ use tokio::task::JoinSet;
 
 use crate::commands::AppContext;
 use crate::machine::Machine;
-use crate::output::RgbColor;
 
 #[derive(Debug, Clone, Args)]
 pub struct StatusArgs {
@@ -51,44 +50,33 @@ pub async fn run(ctx: &AppContext, args: StatusArgs) -> Result<()> {
             "  ───────   ──────    ──────────   ────────────────    ─────────────  ─────  ────",
         );
         for row in &rows {
-            let status = if row.ok { "✓ ok" } else { "✗ issue" };
             let generation = if row.generation.is_empty() {
-                "unknown"
+                "?"
             } else {
                 &row.generation
             };
             let last_applied = if row.last_applied.is_empty() {
-                "unknown"
+                "?"
             } else {
                 &row.last_applied
             };
             let channel = if row.channel.is_empty() {
-                "unknown"
+                "?"
             } else {
                 &row.channel
             };
-            let dirty = if row.dirty.is_empty() {
-                "?"
-            } else {
-                &row.dirty
-            };
             let disk = if row.disk.is_empty() { "?" } else { &row.disk };
-            let status_str = if row.ok {
-                ctx.output.colored(status, RgbColor::MINT)
-            } else {
-                ctx.output.colored(status, RgbColor::ROSE)
-            };
             ctx.output.print(&format!(
-                "  {:<7}   {:<8}  {:<10}   {:<18}  {:<13}  {:<5}  {}",
-                row.machine, status_str, generation, last_applied, channel, dirty, disk
+                "  {:<7}  gen {:<6}  {:<16}  {:<12}  {}",
+                row.machine, generation, last_applied, channel, disk
             ));
             if let Some(error) = &row.error {
-                ctx.output.tip(&format!("↳ {}", error));
+                ctx.output.warn(&format!("↳ {}", error));
             }
         }
 
         if rows.iter().all(|row| row.ok) {
-            ctx.output.face("everything looks great ♡");
+            ctx.output.happy("everything looks great ♡");
         } else {
             ctx.output
                 .warn("at least one machine needs attention, but the summary is above.");

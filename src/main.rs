@@ -87,7 +87,13 @@ async fn main() -> Result<()> {
     let debug = argv.contains(&"--debug".to_string());
     if debug {
         debug::set_enabled(true);
-        debug::log_state("startup", &format!("nina startup, debug mode active, version {}", env!("CARGO_PKG_VERSION")));
+        debug::log_state(
+            "startup",
+            &format!(
+                "nina startup, debug mode active, version {}",
+                env!("CARGO_PKG_VERSION")
+            ),
+        );
     }
 
     let cli = Cli::parse_from(&argv);
@@ -95,7 +101,10 @@ async fn main() -> Result<()> {
     let ctx = AppContext::new(config);
     let entered = argv.get(1..).map(|args| args.join(" "));
     if debug::is_enabled() {
-        debug::log_state("command", entered.as_deref().unwrap_or("interactive prompt"));
+        debug::log_state(
+            "command",
+            entered.as_deref().unwrap_or("interactive prompt"),
+        );
     }
     session::run(&ctx, cli, entered.as_deref()).await
 }

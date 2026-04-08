@@ -87,15 +87,8 @@ async fn apply_option(
                 "sudo nixos-rebuild switch -I nixos-config={}/configuration.nix",
                 machine.config_dir
             );
-            if let Err(err) = run_machine_command(
-                ctx,
-                &on,
-                "patching it in",
-                &cmd,
-                "option",
-                true,
-            )
-            .await
+            if let Err(err) =
+                run_machine_command(ctx, &on, "patching it in", &cmd, "option", true).await
             {
                 ctx.output
                     .error("the rebuild stumbled — i can restore from backup if you like");
@@ -152,16 +145,7 @@ async fn apply_option(
         "sudo nixos-rebuild switch -I nixos-config={}/configuration.nix",
         machine.config_dir
     );
-    if let Err(err) = run_machine_command(
-        ctx,
-        &on,
-        "patching it in",
-        &cmd,
-        "option",
-        true,
-    )
-    .await
-    {
+    if let Err(err) = run_machine_command(ctx, &on, "patching it in", &cmd, "option", true).await {
         ctx.output
             .error("the build failed after editing the remote configuration");
         if confirm_action(ctx.config.confirm, "restore from remote backup?")? {

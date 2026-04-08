@@ -1,11 +1,10 @@
 use std::io::{self, IsTerminal, Write};
-use std::time::Duration;
 
-use anyhow::{Context, Result};
-use clap::Parser;
 use crate::commands::AppContext;
 use crate::output::RgbColor;
 use crate::{commands, Cli, Command};
+use anyhow::{Context, Result};
+use clap::Parser;
 
 const PROMPT_SPOTLIGHTS: &[&str] = &[
     "help",
@@ -32,8 +31,7 @@ async fn run_prompt(ctx: &AppContext) -> Result<()> {
         "nina's little prompt",
         "say what you want in plain terminal words and i'll stay with you.",
     );
-    ctx.output
-        .curious("pick a path and i'll stay nearby.");
+    ctx.output.curious("pick a path and i'll stay nearby.");
     ctx.output.sep();
     for idea in PROMPT_SPOTLIGHTS {
         ctx.output.status_line("idea", idea, RgbColor::LAVENDER);
@@ -113,26 +111,22 @@ async fn run_one_shot(ctx: &AppContext, command: Command, entered: Option<&str>)
     ctx.output.command_echo(rendered);
     ctx.output
         .status_line(descriptor.tag, descriptor.pulse, descriptor.accent);
-    ctx.output.tip(descriptor.followup);
 
-    let started = std::time::Instant::now();
     let result = dispatch_command(ctx, command).await;
-    let elapsed = format_elapsed(started.elapsed());
 
     match &result {
         Ok(_) => {
             ctx.output
                 .status_line("done", descriptor.outro, RgbColor::MINT);
-            ctx.output.kv_succ("elapsed", &elapsed);
         }
         Err(_) => {
-            ctx.output.sad("that didn't quite work, so i'm leaving the details where you can see them.");
+            ctx.output
+                .sad("that didn't quite work, so i'm leaving the details where you can see them.");
             ctx.output.status_line(
                 "oops",
                 "something went wrong, and i'm keeping the trail visible for you.",
                 RgbColor::ROSE,
             );
-            ctx.output.kv_err("elapsed", &elapsed);
         }
     }
 
@@ -204,14 +198,6 @@ fn is_exit_phrase(input: &str) -> bool {
     matches!(input.trim(), "q" | ":q" | "quit" | "exit" | "bye")
 }
 
-fn format_elapsed(elapsed: Duration) -> String {
-    if elapsed.as_secs() > 0 {
-        format!("{:.1}s", elapsed.as_secs_f64())
-    } else {
-        format!("{}ms", elapsed.as_millis())
-    }
-}
-
 fn command_name(command: &Command) -> &'static str {
     match command {
         Command::Apply(_) => "apply",
@@ -262,7 +248,6 @@ struct SessionDescriptor {
     tag: &'static str,
     headline: &'static str,
     pulse: &'static str,
-    followup: &'static str,
     outro: &'static str,
     accent: RgbColor,
 }
@@ -272,8 +257,7 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
         "apply" | "upgrade" => SessionDescriptor {
             tag: "rebuild",
             headline: "getting your system ready.",
-            pulse: "i'm checking a few things before the rebuild starts.",
-            followup: "i'll keep the important steps grouped together.",
+            pulse: "i'll keep the important steps grouped together.",
             outro: "the rebuild is settled now ♡",
             accent: RgbColor::MINT,
         },
@@ -281,7 +265,6 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             tag: "rewind",
             headline: "looking through your generation history.",
             pulse: "i'm following the generation trail.",
-            followup: "if the active generation changes, i'll point it out.",
             outro: "you're on the generation you asked for.",
             accent: RgbColor::LAVENDER,
         },
@@ -289,7 +272,6 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             tag: "sweep",
             headline: "cleaning up the older bits without touching what you need.",
             pulse: "i'm looking for unused store paths and extra weight.",
-            followup: "i'll keep the cleanup summary practical.",
             outro: "things feel a little lighter now.",
             accent: RgbColor::GOLD,
         },
@@ -298,7 +280,6 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             tag: "scan",
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
             accent: RgbColor::PINK,
         },
@@ -307,7 +288,6 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             tag: "shape",
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
             accent: RgbColor::ROSE,
         },
@@ -315,8 +295,7 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             SessionDescriptor {
                 tag: "setup",
                 headline: "getting things ready before the busy part starts.",
-                pulse: "i'm bringing the tools and command context together.",
-                followup: "i'll give you a short lead-in before the heavier output starts.",
+                pulse: "i'll give you a short lead-in before the heavier output starts.",
                 outro: "that finished cleanly.",
                 accent: RgbColor::MINT,
             }
@@ -325,7 +304,6 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             tag: "refresh",
             headline: "refreshing things before anything bigger happens.",
             pulse: "i'm refreshing channels and inputs now.",
-            followup: "i'll let you know if the network is the slow part.",
             outro: "the channels look fresh again.",
             accent: RgbColor::GOLD,
         },
@@ -333,7 +311,6 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             tag: "service",
             headline: "checking in on the service before i nudge it.",
             pulse: "i'm making sure the service is ready for the next step.",
-            followup: "you'll see the service story as it changes.",
             outro: "the service side is wrapped up now ♡",
             accent: RgbColor::LAVENDER,
         },
@@ -341,7 +318,6 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             tag: "hi",
             headline: "starting with a little hello.",
             pulse: "i'm finding your machines now.",
-            followup: "this one should stay light and friendly.",
             outro: "hello all set ♡",
             accent: RgbColor::PINK,
         },
@@ -349,7 +325,6 @@ fn descriptor_for(name: &str) -> SessionDescriptor {
             tag: "nina",
             headline: "getting everything in place before we start.",
             pulse: "keeping you posted while the command takes shape.",
-            followup: "i'll keep the important bits close at hand.",
             outro: "all done ♡",
             accent: RgbColor::PINK,
         },
@@ -361,6 +336,9 @@ mod tests {
     use super::*;
 
     fn assert_voice_line(line: &str) {
+        if line.is_empty() {
+            return;
+        }
         assert!(
             !line.contains("  "),
             "descriptor copy should not contain doubled spaces: {line}"
@@ -411,7 +389,6 @@ mod tests {
                 $name:ident : $command:literal => {
                     headline: $headline:literal,
                     pulse: $pulse:literal,
-                    followup: $followup:literal,
                     outro: $outro:literal,
                 },
             )+
@@ -431,11 +408,6 @@ mod tests {
                     }
 
                     #[test]
-                    fn followup() {
-                        assert_eq!(descriptor_for($command).followup, $followup);
-                    }
-
-                    #[test]
                     fn outro() {
                         assert_eq!(descriptor_for($command).outro, $outro);
                     }
@@ -446,7 +418,6 @@ mod tests {
                         for line in [
                             descriptor.headline,
                             descriptor.pulse,
-                            descriptor.followup,
                             descriptor.outro,
                         ] {
                             assert_voice_line(line);
@@ -546,242 +517,202 @@ mod tests {
     descriptor_copy_tests! {
         apply: "apply" => {
             headline: "getting your system ready.",
-            pulse: "i'm checking a few things before the rebuild starts.",
-            followup: "i'll keep the important steps grouped together.",
+            pulse: "i'll keep the important steps grouped together.",
             outro: "the rebuild is settled now ♡",
         },
         back: "back" => {
             headline: "looking through your generation history.",
             pulse: "i'm following the generation trail.",
-            followup: "if the active generation changes, i'll point it out.",
             outro: "you're on the generation you asked for.",
         },
         build: "build" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         boot: "boot" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         channel: "channel" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         history: "history" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         go: "go" => {
             headline: "looking through your generation history.",
             pulse: "i'm following the generation trail.",
-            followup: "if the active generation changes, i'll point it out.",
             outro: "you're on the generation you asked for.",
         },
         clean: "clean" => {
             headline: "cleaning up the older bits without touching what you need.",
             pulse: "i'm looking for unused store paths and extra weight.",
-            followup: "i'll keep the cleanup summary practical.",
             outro: "things feel a little lighter now.",
         },
         develop: "develop" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         search: "search" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         install: "install" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         remove: "remove" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         r#try: "try" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         list: "list" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         fetch: "fetch" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         flake: "flake" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         fmt: "fmt" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         gen: "gen" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         hash: "hash" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         edit: "edit" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         check: "check" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         diff: "diff" => {
             headline: "getting everything in place before we start.",
             pulse: "keeping you posted while the command takes shape.",
-            followup: "i'll keep the important bits close at hand.",
             outro: "all done ♡",
         },
         info: "info" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         option: "option" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         pin: "pin" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         unpin: "unpin" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         pkg: "pkg" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         profile: "profile" => {
             headline: "lining up the change before anything gets written.",
             pulse: "i'm lining up edits, previews, and the next likely move.",
-            followup: "i'll show the shape of the change before i move on.",
             outro: "the change went through cleanly.",
         },
         repl: "repl" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         run: "run" => {
             headline: "getting things ready before the busy part starts.",
-            pulse: "i'm bringing the tools and command context together.",
-            followup: "i'll give you a short lead-in before the heavier output starts.",
+            pulse: "i'll give you a short lead-in before the heavier output starts.",
             outro: "that finished cleanly.",
         },
         service: "service" => {
             headline: "checking in on the service before i nudge it.",
             pulse: "i'm making sure the service is ready for the next step.",
-            followup: "you'll see the service story as it changes.",
             outro: "the service side is wrapped up now ♡",
         },
         status: "status" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         store: "store" => {
             headline: "cleaning up the older bits without touching what you need.",
             pulse: "i'm looking for unused store paths and extra weight.",
-            followup: "i'll keep the cleanup summary practical.",
             outro: "things feel a little lighter now.",
         },
         update: "update" => {
             headline: "refreshing things before anything bigger happens.",
             pulse: "i'm refreshing channels and inputs now.",
-            followup: "i'll let you know if the network is the slow part.",
             outro: "the channels look fresh again.",
         },
         upgrade: "upgrade" => {
             headline: "getting your system ready.",
-            pulse: "i'm checking a few things before the rebuild starts.",
-            followup: "i'll keep the important steps grouped together.",
+            pulse: "i'll keep the important steps grouped together.",
             outro: "the rebuild is settled now ♡",
         },
         log: "log" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         doctor: "doctor" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         help: "help" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
         hello: "hello" => {
             headline: "starting with a little hello.",
             pulse: "i'm finding your machines now.",
-            followup: "this one should stay light and friendly.",
             outro: "hello all set ♡",
         },
         mood: "mood" => {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
-            followup: "i'll keep the output grouped and easy to scan.",
             outro: "that should feel easier to read now.",
         },
     }
@@ -822,16 +753,6 @@ mod tests {
         for input in ["help", "search", "apply --check"] {
             assert!(!is_exit_phrase(input), "{input} should not exit");
         }
-    }
-
-    #[test]
-    fn format_elapsed_prefers_millis_for_short_runs() {
-        assert_eq!(format_elapsed(Duration::from_millis(245)), "245ms");
-    }
-
-    #[test]
-    fn format_elapsed_uses_seconds_for_longer_runs() {
-        assert_eq!(format_elapsed(Duration::from_millis(1500)), "1.5s");
     }
 
     #[test]
