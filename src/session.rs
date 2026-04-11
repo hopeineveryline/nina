@@ -16,6 +16,7 @@ const PROMPT_SPOTLIGHTS: &[&str] = &[
 
 pub async fn run(ctx: &AppContext, cli: Cli, entered: Option<&str>) -> Result<()> {
     match cli.command {
+        Some(Command::Hello(args)) => dispatch_command(ctx, Command::Hello(args)).await,
         Some(command) => run_one_shot(ctx, command, entered).await,
         None if io::stdin().is_terminal() && io::stdout().is_terminal() => run_prompt(ctx).await,
         None => {
@@ -704,11 +705,6 @@ mod tests {
             headline: "pulling the useful parts forward so they're easy to read.",
             pulse: "i'm gathering the parts worth looking at first.",
             outro: "that should feel easier to read now.",
-        },
-        hello: "hello" => {
-            headline: "starting with a little hello.",
-            pulse: "i'm finding your machines now.",
-            outro: "hello all set ♡",
         },
         mood: "mood" => {
             headline: "pulling the useful parts forward so they're easy to read.",

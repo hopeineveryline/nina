@@ -7,29 +7,26 @@ use clap::Args;
 pub struct HelloArgs {}
 
 pub async fn run(ctx: &AppContext, _args: HelloArgs) -> Result<()> {
-    ctx.output.face("hi! i'm nina~");
-    ctx.output.print_muted("i'm your calm little nix helper.");
+    ctx.output.print("(˶ᵔ ᵕ ᵔ˶)");
+    ctx.output.blank();
+    ctx.output.print_muted("hi, i'm nina.");
     ctx.output
-        .print_muted("i love declarative systems and calm terminal vibes ♡");
+        .print_muted("i make nix feel a little less like a foreign language.");
     ctx.output.blank();
 
-    ctx.output.print_muted("i'm managing:");
+    ctx.output.print_muted("machines i know:");
     for raw in &ctx.config.machines {
         let machine = Machine::from_config(raw);
         let default_tag = if raw.default { ", default" } else { "" };
         ctx.output.print(&format!(
-            "  - {} ({}{default_tag})",
+            "  {}    {}{}",
             machine.name,
-            machine.endpoint_label()
+            machine.endpoint_label(),
+            default_tag
         ));
     }
 
-    if ctx.config.animate {
-        ctx.output.excited("i hope you'll like these ♡");
-    }
-
     ctx.output.blank();
-    ctx.output
-        .print_muted("try 'nina help' to see everything i can do ♡");
+    ctx.output.print_muted("'nina help' to get started.  ♡");
     Ok(())
 }

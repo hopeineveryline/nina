@@ -69,10 +69,6 @@ impl Output {
         self.kao(Kaomoji::SoftBlush, message);
     }
 
-    /// Excited reaction (ง ˙˘˙ )ว — used for discoveries or enthusiasm
-    pub fn excited(&self, message: &str) {
-        self.kao(Kaomoji::Excited, message);
-    }
 
     /// Sad reaction (｡•́︿•̀｡) — used for empty states or disappointments
     pub fn sad(&self, message: &str) {
@@ -299,7 +295,6 @@ const BORDER: Color = Color(58, 47, 72);
 enum Kaomoji {
     Nina,      // ˶ᵔ ᵕ ᵔ˶ — warm general greeting
     SoftBlush, // ⑅˘꒳˘)♡ — happy success
-    Excited,   // (ง ˙˘˙ )ว — enthusiasm / discovery
     Sad,       // (｡•́︿•̀｡) — disappointment / empty
     Curious,   // (˘ω˘) — prompt / question
     Cozy,      // ˶ᵔ ᵕ ᵔ˶)♡ — mood warmth
@@ -310,7 +305,6 @@ impl Kaomoji {
         let face = match self {
             Kaomoji::Nina => "(˶ᵔ ᵕ ᵔ˶)",
             Kaomoji::SoftBlush => "(⑅˘꒳˘)♡",
-            Kaomoji::Excited => "(ง ˙˘˙ )ว",
             Kaomoji::Sad => "(｡•́︿•̀｡)",
             Kaomoji::Curious => "(˘ω˘)",
             Kaomoji::Cozy => "(˶ᵔ ᵕ ᵔ˶)♡",
@@ -436,7 +430,6 @@ mod tests {
     kaomoji_symbol_tests! {
         nina_face_symbol => Kaomoji::Nina, "(˶ᵔ ᵕ ᵔ˶)",
         soft_blush_symbol => Kaomoji::SoftBlush, "(⑅˘꒳˘)♡",
-        excited_symbol => Kaomoji::Excited, "(ง ˙˘˙ )ว",
         sad_symbol => Kaomoji::Sad, "(｡•́︿•̀｡)",
         curious_symbol => Kaomoji::Curious, "(˘ω˘)",
         cozy_symbol => Kaomoji::Cozy, "(˶ᵔ ᵕ ᵔ˶)♡",
@@ -462,7 +455,6 @@ mod tests {
     colored_kaomoji_symbol_tests! {
         nina_face_symbol_is_colored => Kaomoji::Nina,
         soft_blush_symbol_is_colored => Kaomoji::SoftBlush,
-        excited_symbol_is_colored => Kaomoji::Excited,
         sad_symbol_is_colored => Kaomoji::Sad,
         curious_symbol_is_colored => Kaomoji::Curious,
         cozy_symbol_is_colored => Kaomoji::Cozy,
